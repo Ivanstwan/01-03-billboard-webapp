@@ -27,6 +27,12 @@ export const publicRoutes = [
     path: '/signup',
     element: <SignUp />,
   },
+  // below is route that should be private, but not yet configure for the login etc
+  {
+    path: '/signup',
+    element: <SignUp />,
+  },
+  // --------------------------------
   {
     path: '*',
     element: <NotFound />,
