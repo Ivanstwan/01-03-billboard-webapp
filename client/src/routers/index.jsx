@@ -4,6 +4,7 @@ import Home from '@/pages/Home';
 import LandingPage from '@/pages/LandingPage';
 import Login from '@/pages/Login';
 import SignUp from '@/pages/SignUp';
+import AddListing from '@/pages/Listing';
 
 const NotFound = lazy(() => import('@/pages/NotFound'));
 
@@ -18,6 +19,10 @@ export const publicRoutes = [
   {
     path: '/',
     element: <LandingPage />,
+  },
+  {
+    path: '/add-listing',
+    element: <AddListing />,
   },
   {
     path: '/login',
