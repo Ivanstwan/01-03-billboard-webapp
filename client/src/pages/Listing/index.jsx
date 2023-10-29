@@ -6,6 +6,17 @@ import SizeDisplay from './SizeDisplay';
 import AdsType from './AdsType';
 import { Button } from '@/components/ui';
 import { validateAndTransformState } from '@/lib/formUtils';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 const inputValidation = {
   title: {
@@ -38,7 +49,7 @@ const AddListing = () => {
 
   const [error, setError] = useState({});
 
-  const [inputIsOk, setInputIsOk] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const inputs = [
     {
@@ -124,24 +135,27 @@ const AddListing = () => {
       : undefined;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
+  const handleBeforeSubmit = (e) => {
     const responseValidation = validateAndTransformState(
       locationData,
       inputValidation
     );
 
-    if (responseValidation.isInputValid) {
-      // api call or trigger box to submit
-    } else {
-      setInputIsOk(responseValidation.isInputValid);
+    if (!responseValidation.isInputValid) {
+      // prevent modal
+      e.preventDefault();
       setError({ ...responseValidation.error });
     }
+  };
 
-    // Now, updatedLocationData contains the validated and converted values
-    console.log(responseValidation, '[updatedLocationData]');
-    console.log(locationData, '[location data]');
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!loading) {
+      setLoading(!loading);
+
+      // CALL API
+      console.log('CALL API for add Listing');
+    }
   };
 
   return (
@@ -205,7 +219,7 @@ const AddListing = () => {
               <span className="not-italic">😉</span>
             </span>
           </div>
-          <div className="min-w-96 relative h-96 w-96 border-2 border-green-100">
+          <div className="min-w-96 relative z-10 h-96 w-96 border-2 border-green-100">
             {isValidCoordinates(
               locationData.latitude,
               locationData.longitude
@@ -214,9 +228,36 @@ const AddListing = () => {
         </div>
       </div>
       <div className="pt-10">
-        <Button className="ml-auto p-9 text-xl" onClick={handleSubmit}>
-          Submit Listing 😉
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger
+            className="ml-auto inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-primary p-9 text-xl font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+            onClick={handleBeforeSubmit}
+          >
+            Submit Listing 😉
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Please Recheck Your Input</AlertDialogTitle>
+              {Object.keys(locationData).map((item) => {
+                return (
+                  <AlertDialogDescription key={item}>
+                    {item} ={' '}
+                    {locationData[item] === undefined ||
+                    locationData[item] === ''
+                      ? '[empty]'
+                      : locationData[item]}
+                  </AlertDialogDescription>
+                );
+              })}
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              {!loading && <AlertDialogCancel>Cancel</AlertDialogCancel>}
+              <AlertDialogAction onClick={handleSubmit}>
+                {loading ? 'Loading...' : 'Continue'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </MainLayout>
   );
