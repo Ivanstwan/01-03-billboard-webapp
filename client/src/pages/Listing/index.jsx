@@ -46,8 +46,6 @@ const AddListing = () => {
       name: 'title',
       type: 'text',
       placeholder: 'E.g. Perempatan Dago / Bridge Pondok Indah Mall',
-      errorMessage:
-        "Username should be 3-16 characters and shouldn't include any special character!",
       label: 'Title',
       pattern: '^[A-Za-z0-9]{3,16}$',
       errorMessage: error?.title,
@@ -58,8 +56,6 @@ const AddListing = () => {
       type: 'text',
       placeholder:
         'E.g. Jl. Farmasi No.6, RT.6/RW.3, Bendungan Hilir, Tanah Abang, Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10210',
-      errorMessage:
-        "Username should be 3-16 characters and shouldn't include any special character!",
       label: 'Address / Location Estimation',
       pattern: '^[A-Za-z0-9]{3,16}$',
       errorMessage: error?.address,
@@ -89,8 +85,6 @@ const AddListing = () => {
       name: 'latitude',
       type: 'text',
       placeholder: '-8.723816909835',
-      errorMessage:
-        "Username should be 3-16 characters and shouldn't include any special character!",
       label: 'Latitude',
       errorMessage: error?.latitude,
     },
