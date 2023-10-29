@@ -5,92 +5,22 @@ import FormInput from '@/components/custom/input/formInput';
 import SizeDisplay from './SizeDisplay';
 import AdsType from './AdsType';
 import { Button } from '@/components/ui';
+import { validateAndTransformState } from '@/lib/formUtils';
 
-const inputs = [
-  {
-    id: 1,
-    name: 'title',
-    type: 'text',
-    placeholder: 'E.g. Perempatan Dago / Bridge Pondok Indah Mall',
-    errorMessage:
-      "Username should be 3-16 characters and shouldn't include any special character!",
-    label: 'Title',
-    pattern: '^[A-Za-z0-9]{3,16}$',
-  },
-  {
-    id: 2,
-    name: 'address',
-    type: 'text',
-    placeholder:
-      'E.g. Jl. Farmasi No.6, RT.6/RW.3, Bendungan Hilir, Tanah Abang, Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10210',
-    errorMessage:
-      "Username should be 3-16 characters and shouldn't include any special character!",
-    label: 'Address / Location Estimation',
-    pattern: '^[A-Za-z0-9]{3,16}$',
-  },
-];
-
-const inputsSize = [
-  {
-    id: 1,
-    name: 'x',
-    type: 'number',
-    placeholder: 'cm',
-    label: 'Horizontal',
-  },
-  {
-    id: 2,
-    name: 'y',
-    type: 'number',
-    placeholder: 'cm',
-    label: 'Vertical',
-  },
-];
-
-const inputsCoordinate = [
-  {
-    id: 1,
-    name: 'latitude',
-    type: 'text',
-    placeholder: '-8.723816909835',
-    errorMessage:
-      "Username should be 3-16 characters and shouldn't include any special character!",
-    label: 'Latitude',
-  },
-  {
-    id: 2,
-    name: 'longitude',
-    type: 'text',
-    placeholder: '115.17508747874',
-    label: 'Longitude',
-  },
-];
-
-const expectedInput = {
+const inputValidation = {
   title: {
-    type: 'text',
     required: true,
   },
   address: {
-    type: 'text',
     required: true,
   },
   adsType: {
-    type: 'text',
     required: true,
   },
-  x: {
-    type: 'number',
-  },
-  y: {
-    type: 'number',
-  },
   latitude: {
-    type: 'float',
     pattern: /^-?([1-8]?[1-9]|[1-9]0)\.{1}\d{1,6}$/,
   },
   longitude: {
-    type: 'float',
     pattern: /^-?((1[0-7]|[1-9]?)[0-9]|180)\.{1}\d{1,6}$/,
   },
 };
@@ -108,17 +38,88 @@ const AddListing = () => {
 
   const [error, setError] = useState({});
 
+  const [inputIsOk, setInputIsOk] = useState(false);
+
+  const inputs = [
+    {
+      id: 1,
+      name: 'title',
+      type: 'text',
+      placeholder: 'E.g. Perempatan Dago / Bridge Pondok Indah Mall',
+      errorMessage:
+        "Username should be 3-16 characters and shouldn't include any special character!",
+      label: 'Title',
+      pattern: '^[A-Za-z0-9]{3,16}$',
+      errorMessage: error?.title,
+    },
+    {
+      id: 2,
+      name: 'address',
+      type: 'text',
+      placeholder:
+        'E.g. Jl. Farmasi No.6, RT.6/RW.3, Bendungan Hilir, Tanah Abang, Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10210',
+      errorMessage:
+        "Username should be 3-16 characters and shouldn't include any special character!",
+      label: 'Address / Location Estimation',
+      pattern: '^[A-Za-z0-9]{3,16}$',
+      errorMessage: error?.address,
+    },
+  ];
+
+  const inputsSize = [
+    {
+      id: 1,
+      name: 'x',
+      type: 'number',
+      placeholder: 'cm',
+      label: 'Horizontal',
+    },
+    {
+      id: 2,
+      name: 'y',
+      type: 'number',
+      placeholder: 'cm',
+      label: 'Vertical',
+    },
+  ];
+
+  const inputsCoordinate = [
+    {
+      id: 1,
+      name: 'latitude',
+      type: 'text',
+      placeholder: '-8.723816909835',
+      errorMessage:
+        "Username should be 3-16 characters and shouldn't include any special character!",
+      label: 'Latitude',
+      errorMessage: error?.latitude,
+    },
+    {
+      id: 2,
+      name: 'longitude',
+      type: 'text',
+      placeholder: '115.17508747874',
+      label: 'Longitude',
+      errorMessage: error?.longitude,
+    },
+  ];
+
   const handleInputChange = (e) => {
     setLocationData({
       ...locationData,
       [e.target.name]: e.target.value,
     });
+
+    setError({
+      ...error,
+      [e.target.name]: '',
+    });
   };
 
   // Validation function for coordinates
   const isValidCoordinates = (lat, lon) => {
-    const latRegex = expectedInput.latitude.pattern;
-    const lonRegex = expectedInput.longitude.pattern;
+    const latRegex = inputValidation.latitude.pattern;
+    const lonRegex = inputValidation.longitude.pattern;
 
     return latRegex.test(lat) && lonRegex.test(lon);
   };
@@ -129,8 +130,24 @@ const AddListing = () => {
       : undefined;
   };
 
-  const handleSubmit = () => {
-    console.log('submit');
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const responseValidation = validateAndTransformState(
+      locationData,
+      inputValidation
+    );
+
+    if (responseValidation.isInputValid) {
+      // api call or trigger box to submit
+    } else {
+      setInputIsOk(responseValidation.isInputValid);
+      setError({ ...responseValidation.error });
+    }
+
+    // Now, updatedLocationData contains the validated and converted values
+    console.log(responseValidation, '[updatedLocationData]');
+    console.log(locationData, '[location data]');
   };
 
   return (
@@ -169,7 +186,11 @@ const AddListing = () => {
       </div>
       <div className="py-4">
         <p className="pb-2 font-semibold">Advertisement Type</p>
-        <AdsType onChange={handleInputChange} name="adsType" />
+        <AdsType
+          onChange={handleInputChange}
+          name="adsType"
+          errorMessage={error?.adsType}
+        />
       </div>
       <div className="py-4">
         <div className="flex flex-wrap gap-10">
@@ -199,7 +220,7 @@ const AddListing = () => {
         </div>
       </div>
       <div className="pt-10">
-        <Button className="ml-auto p-9 text-xl" onClick={handleSubmit()}>
+        <Button className="ml-auto p-9 text-xl" onClick={handleSubmit}>
           Submit Listing 😉
         </Button>
       </div>

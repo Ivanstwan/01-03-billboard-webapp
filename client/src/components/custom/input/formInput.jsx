@@ -21,10 +21,17 @@ const FormInput = (props) => {
           onFocus={() =>
             inputProps.name === 'confirmPassword' && setFocused(true)
           }
+          className={errorMessage ? 'border border-red-500' : ''}
           focused={focused.toString()}
         />
       </label>
-      <p className={error ? '' : 'h-0 opacity-0'}>{errorMessage}</p>
+      <p
+        className={
+          errorMessage ? 'capitalize italic text-red-500' : 'h-0 opacity-0'
+        }
+      >
+        {errorMessage}
+      </p>
     </div>
   );
 };
