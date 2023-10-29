@@ -22,7 +22,7 @@ const adsTypes = [
 const AdsType = ({ onChange, name, errorMessage }) => {
   return (
     <>
-      <div className="grid grid-cols-3 gap-4 md:auto-rows-[200px]">
+      <div className="grid auto-rows-[200px] grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
         {adsTypes.map((ads) => {
           return (
             <div className="relative" key={ads.id}>
