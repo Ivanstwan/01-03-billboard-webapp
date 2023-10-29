@@ -20,8 +20,8 @@ export const MainLayout = ({ children }) => {
         </div>
         <section className="flex flex-1 flex-col">
           {/* <main className="relative mt-16 grid grow grid-cols-[minmax(269px,1fr)_minmax(500px,4fr)] grid-rows-1 gap-8"> */}
-          <main className="relative mt-16 grid grow grid-cols-[minmax(269px,1fr)_minmax(500px,4fr)] grid-rows-1 gap-8">
-            <nav className="fixed left-0 top-[4rem] h-full w-60 bg-white shadow-md">
+          <main className="relative mt-16 grid grow grid-rows-1 gap-8 md:grid-cols-[minmax(269px,1fr)_minmax(500px,4fr)]">
+            <nav className="fixed left-0 top-[4rem] hidden h-full w-60 bg-white shadow-md md:block">
               Possible Sidebar
             </nav>
             <section className="col-start-2 pr-8 pt-8">
