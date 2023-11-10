@@ -32,13 +32,25 @@ const Listing = () => {
               {/* </div> */}
             </section>
             <section className="overflow-y-scroll pt-6 shadow-2xl">
-              <div className="grid grid-cols-2 gap-2 px-4">
+              <div className="grid grid-cols-2 gap-3 px-4">
                 {data.response.map((item) => {
                   return (
                     <>
                       <Modal>
-                        <div>
-                          <Carousel images={item.carouselPhotos.slice(0, 5)} />
+                        <div className="overflow-hidden">
+                          {item.carouselPhotos.length ? (
+                            <Carousel
+                              images={item.carouselPhotos.slice(0, 5)}
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center">
+                              <img
+                                src="https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg"
+                                alt="no image"
+                                className="max-h-96 w-full max-w-md rounded-lg object-contain shadow-lg"
+                              />
+                            </div>
+                          )}
                         </div>
                         <div className="p-2">
                           <p className="text-lg font-semibold">

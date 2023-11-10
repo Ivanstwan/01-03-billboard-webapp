@@ -6,91 +6,28 @@
       "providerListingId": null,
       "imgSrc": "https://photos.zillowstatic.com/fp/5311b7746a4367eb9300830ba7658f62-p_e.jpg",
       "hasImage": true,
+      "carouselPhotos": [],
+      "countryCurrency": "$",
+      "price": "$399,000",
+      "unformattedPrice": 399000,
+      "address": "13819 Cliftgate Pass, Fort Wayne, IN 46814",
+      "addressStreet": "13819 Cliftgate Pass",
+      "addressCity": "Fort Wayne",
+      "addressZipcode": "46814",
+      "area": 2359,
+      "latLong": {
+        "latitude": 41.015247,
+        "longitude": -85.321556
+      },
+      "brokerName": "CENTURY 21 Bradley Realty, Inc"
+    },
+    {
+      "id": "94270122",
+      "titleText": "House for sale",
+      "providerListingId": null,
+      "imgSrc": "https://photos.zillowstatic.com/fp/5311b7746a4367eb9300830ba7658f62-p_e.jpg",
+      "hasImage": true,
       "carouselPhotos": [
-        {
-          "url": "https://photos.zillowstatic.com/fp/5311b7746a4367eb9300830ba7658f62-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/28253df95816a97b568fd4071957c946-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/56e6b74a481146afe7ff36adbecdafe9-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/16b96781af152e75dffee9f18f5fe896-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/61639c3b7da93e762240ac31e3ea8857-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/7f25809485614f9612805bf463537a19-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/1e0db4394d2a053e85fa465e9c556389-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/2c335ab624ffb3c528f932de734e1c0d-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/dcaca629520c8e69f25af9f9909ccf89-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/12985db3c8c786781f8f762272de0f60-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/b4957575e803cca5e1e4e44d7d8ad440-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/ba050ed29f91aaca1b34b20c931eb6db-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/e43cc89e4550e803bf7fc4ea1350e8c3-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/c275c755652e899dadd7b609d21559af-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/69f925fd8ad91c81f47e25bdf9fcb66d-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/6960503410299eb337ca68ee77213243-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/22f75a5f2141ab45cd013c95e62790c2-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/fac206ebe7b085a3c44f29ebed3b4493-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/d470e708fe8cd63154e38c84de34ee51-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/a93e14b92ad0ee869e417748b004b576-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/300784a3e19a845cd6dbc6ad146c7aea-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/a5e2768d359e1706cd312fa2d2777e97-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/3b7dd61204af4f8a73ef5d040f9f864a-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/653c7de9b9f1b27592e262e6da28cac1-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/bc7a280ff959f0c579a68305ef9052e7-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/31645641645058572d5a0a482b2fb924-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/424131c9906221ed2711d6673d9f2249-p_e.jpg"
-        },
-        {
-          "url": "https://photos.zillowstatic.com/fp/3fe07175f5df4c0085f3dbb379da5f8b-p_e.jpg"
-        },
         {
           "url": "https://photos.zillowstatic.com/fp/baa23d16c87e83c34b3ef8d9dfdd94fc-p_e.jpg"
         }
