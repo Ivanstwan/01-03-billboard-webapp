@@ -1,8 +1,23 @@
-const express = require('express');
+import express from 'express';
+import pool from '../config/db.config.js';
 
-const router = express.Router();
+// import authRouter from './auth.router';
+// import usersRouter from './users.router';
+import listingRouter from './listing.router.js';
 
-router.use('/auth', require('./auth.router'));
-router.use('/users', require('./users.router'));
+const routers = express.Router();
 
-module.exports = router;
+routers.use('/listing', listingRouter);
+// router.use('/auth', authRouter);
+// router.use('/users', usersRouter);
+
+routers.use('/test', async (req, res) => {
+  try {
+    const [rows, fields] = await pool.query('SELECT * FROM country;');
+    res.send(rows);
+  } catch (error) {
+    console.log('Error querying database:', error);
+  }
+});
+
+export default routers;
