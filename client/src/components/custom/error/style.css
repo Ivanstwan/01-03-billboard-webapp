@@ -1,0 +1,39 @@
+@keyframes example {
+  0% {
+    max-height: 0px;
+    margin-top: 0px;
+  }
+  10% {
+    max-height: 40px;
+    margin-top: 2rem;
+    opacity: 1;
+    left: 400px;
+  }
+  20% {
+    left: 0;
+  }
+  80% {
+    left: 0;
+  }
+  90% {
+    opacity: 1;
+    left: 0;
+    max-height: 40px;
+    margin-top: 2rem;
+  }
+  100% {
+    opacity: 0;
+    left: 400px;
+    max-height: 0px;
+    margin-top: 0px;
+  }
+}
+
+.animation-try {
+  position: relative;
+  animation-name: example;
+  animation-duration: 4.8s;
+  max-height: 0px;
+  left: 400px;
+  margin-top: 0px;
+}
