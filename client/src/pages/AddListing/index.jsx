@@ -17,6 +17,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { addListing } from '@/api/listingApi';
+import { useNavigate } from 'react-router-dom';
 
 const inputValidation = {
   title: {
@@ -37,6 +39,7 @@ const inputValidation = {
 };
 
 const AddListing = () => {
+  const navigate = useNavigate();
   const [locationData, setLocationData] = useState({
     title: '',
     address: '',
@@ -153,8 +156,22 @@ const AddListing = () => {
     if (!loading) {
       setLoading(!loading);
 
-      // CALL API
-      console.log('CALL API for add Listing');
+      // Post Data to api
+      const postData = async () => {
+        try {
+          const result = await addListing(locationData);
+
+          if (result?.success) {
+            return navigate('/listing');
+          }
+          // setListing(result);
+        } catch (error) {
+          // setError(error);
+        } finally {
+          // setIsLoading(false);
+        }
+      };
+      postData();
     }
   };
 
