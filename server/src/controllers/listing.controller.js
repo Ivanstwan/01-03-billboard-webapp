@@ -1,5 +1,6 @@
 import pool from '../config/db.config.js';
 
+// add listing
 const addListing = async (req, res) => {
   try {
     const { title, address, x, y, latitude, longitude, adsType } = req.body;
@@ -47,34 +48,47 @@ const addListing = async (req, res) => {
   }
 };
 
-const getListing = async (req, res) => {
-  console.log('get list');
+// get listing within area (in this case area means latitude and longitude bound of the map)
+// e.g. lat -6.7 to -6.8, and long 115.1 to 115.2 (like a square area)
+const getListingWithinArea = async (req, res) => {
   try {
-    const query = 'SELECT * FROM `advertisement` LIMIT ?;';
-    const values = ['ads_name', 'loca', 1, 10];
-    const [rows, fields] = await pool.query(query);
-    console.log(rows, '[rows]');
+    let query = 'SELECT * FROM `advertisement` LIMIT ?;';
+    let values = [1];
 
-    // const [rows, fields] = await pool.query('SELECT * FROM real_estate;');
-    res.json(rows);
+    if (req.query?.mapBounds) {
+      const { north, east, west, south } = req.query.mapBounds;
+
+      // Convert coordinates to float
+      const floatNorth = parseFloat(north);
+      const floatSouth = parseFloat(south);
+      const floatEast = parseFloat(east);
+      const floatWest = parseFloat(west);
+
+      query =
+        'SELECT * FROM `advertisement` WHERE `latitude` BETWEEN ? AND ? AND `longitude` BETWEEN ? AND ? LIMIT ?;';
+      values = [floatSouth, floatNorth, floatWest, floatEast, 10];
+    }
+
+    const [rows, fields] = await pool.query(query, values);
+
+    res.status(200).json(rows);
   } catch (err) {
-    console.log('Error querying real estate data:', error);
+    console.log('Error querying data:', err);
     res.status(500).send('Internal Server Error');
   }
 };
 
 const getSingleListing = async (req, res) => {
-  console.log('get single list', req.params.id);
   const listingId = req.params.id;
 
   try {
     const query = 'SELECT * FROM `advertisement` WHERE id = ?;';
     const values = [listingId];
     const [rows, fields] = await pool.query(query, values);
-    console.log(rows, '[rows]');
 
     res.json(rows);
-  } catch (error) {
+  } catch (err) {
+    console.log('Error querying data:', err);
     res.status(500).send('Internal Server Error');
   }
 };
@@ -88,14 +102,14 @@ const insertDataIntoDatabase = async (name, latitude, longitude) => {
     const [result] = await pool.promises.query(query, values);
 
     console.log('Inserted data into the database:', result);
-  } catch (error) {
-    console.error('Error inserting data into the database:', error);
+  } catch (err) {
+    console.error('Error inserting data into the database:', err);
   }
 };
 
-// export const viewListing = async (req, res) => {
-//   try {
-//   } catch (error) {}
-// };
-
-export { addListing, getListing, getSingleListing, insertDataIntoDatabase };
+export {
+  addListing,
+  getListingWithinArea,
+  getSingleListing,
+  insertDataIntoDatabase,
+};
