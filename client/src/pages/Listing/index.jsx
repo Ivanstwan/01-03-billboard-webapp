@@ -81,13 +81,13 @@ const Listing = () => {
         north: northNumber,
         south: southNumber,
       };
+
       // sending bound as a params/query
       const queryParams = qs.stringify({
-        mapBounds: parseBounds,
+        mapBounds: JSON.stringify(parseBounds),
       });
 
       const result = await getListingData(queryParams);
-      console.log(result, '[result]');
       // setListing(result);
     } catch (error) {
       // setError(error);

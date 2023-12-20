@@ -56,7 +56,7 @@ const getListingWithinArea = async (req, res) => {
     let values = [1];
 
     if (req.query?.mapBounds) {
-      const { north, east, west, south } = req.query.mapBounds;
+      const { north, east, west, south } = JSON.parse(req.query.mapBounds);
 
       // Convert coordinates to float
       const floatNorth = parseFloat(north);
@@ -66,7 +66,7 @@ const getListingWithinArea = async (req, res) => {
 
       query =
         'SELECT * FROM `advertisement` WHERE `latitude` BETWEEN ? AND ? AND `longitude` BETWEEN ? AND ? LIMIT ?;';
-      values = [floatSouth, floatNorth, floatWest, floatEast, 10];
+      values = [floatSouth, floatNorth, floatWest, floatEast, 50];
     }
 
     const [rows, fields] = await pool.query(query, values);
