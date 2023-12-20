@@ -28,6 +28,7 @@ const Listing = () => {
 
   const [center, setCenter] = useState([]);
   const [zoom, setZoom] = useState(15);
+  const [listing, setListing] = useState([]);
 
   // (First) - Basically check 'mapBounds' query params, and set the center of map depending on the 'mapBounds' if exist
   useEffect(() => {
@@ -88,7 +89,7 @@ const Listing = () => {
       });
 
       const result = await getListingData(queryParams);
-      // setListing(result);
+      setListing(result);
     } catch (error) {
       // setError(error);
     } finally {
@@ -110,8 +111,17 @@ const Listing = () => {
 
   // getting map data (map bounds, zoom), and put it into url query
   const getMapData = (map) => {
+    const getCenter = map.getCenter();
+    const parseCenter = [
+      parseFloat(getCenter.lat.toFixed(6)),
+      parseFloat(getCenter.lng.toFixed(6)),
+    ];
     const getZoom = map.getZoom();
     const getMapBounds = map.getBounds();
+
+    // set center and zoom, after move/zoom event
+    setCenter(parseCenter);
+    setZoom(getZoom);
 
     const north = getMapBounds._northEast.lat;
     const east = getMapBounds._northEast.lng;
@@ -132,19 +142,64 @@ const Listing = () => {
 
   return (
     <FullLayout>
-      <div className="flex h-full flex-col-reverse pt-24">
+      <div
+        className={
+          listing.length > 0
+            ? 'flex h-full flex-col-reverse pt-[5.8rem]'
+            : 'flex h-full flex-col-reverse'
+        }
+      >
         <section className="h-full">
           {/* <div className="grid-rows-[calc(100% - 4rem)] grid h-full grid-cols-2"> */}
           <div className="grid h-full md:grid-cols-[1fr_375px] 2xl:grid-cols-[1fr_750px]">
             <section className="z-10 hidden md:block">
               {/* <div className="relative z-10"> */}
               {/* <Map center={[-6.903732, 107.618933]} zoom={17} /> */}
-              <DisplayMap getMapData={getMapData} center={center} zoom={zoom} />
+              <DisplayMap
+                getMapData={getMapData}
+                center={center}
+                zoom={zoom}
+                listing={listing}
+              />
               {/* </div> */}
             </section>
             <section className="overflow-y-scroll pt-6 shadow-2xl">
               <div className="grid grid-cols-2 gap-3 px-4">
-                {data.response.map((item) => {
+                {listing.length > 0
+                  ? listing.map((item) => {
+                      return (
+                        <>
+                          <Modal>
+                            <div className="overflow-hidden">
+                              {item.carouselPhotos?.length ? (
+                                <Carousel
+                                  images={item.carouselPhotos.slice(0, 5)}
+                                />
+                              ) : (
+                                <div className="flex h-full w-full items-center justify-center">
+                                  <img
+                                    src="https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg"
+                                    alt="no image"
+                                    className="max-h-96 w-full max-w-md rounded-lg object-contain shadow-lg"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                            <div className="p-2">
+                              <p className="text-lg font-semibold">
+                                {item.ads_name}
+                              </p>
+                              <p className="text-sm">{item.location}</p>
+                              <p className="text-xs text-slate-400">
+                                {item.user_id}
+                              </p>
+                            </div>
+                          </Modal>
+                        </>
+                      );
+                    })
+                  : 'No Data'}
+                {/* {data.response.map((item) => {
                   return (
                     <>
                       <Modal>
@@ -175,7 +230,7 @@ const Listing = () => {
                       </Modal>
                     </>
                   );
-                })}
+                })} */}
               </div>
             </section>
           </div>

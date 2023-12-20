@@ -43,6 +43,7 @@ export default function ExternalStateExample({
   center = [-6.903732, 107.618933],
   zoom = 17,
   onMoveHandler, // Function to handle 'something' (e.g. maybe fetch api) on map move
+  listing = [],
 }) {
   const [map, setMap] = useState(null);
 
@@ -53,7 +54,7 @@ export default function ExternalStateExample({
     } else {
       const onMoveDebounced = _.debounce(() => {
         if (onMoveHandler) onMoveHandler(map);
-      }, 500); // Adjust the debounce delay as needed
+      }, 400); // Adjust the debounce delay as needed
 
       map.on('move', onMoveDebounced);
 
@@ -76,9 +77,15 @@ export default function ExternalStateExample({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        {listing.length > 0 &&
+          listing.map((item) => {
+            return (
+              <Marker position={[item.latitude, item.longitude]}>Test</Marker>
+            );
+          })}
       </MapContainer>
     ),
-    [center]
+    [listing, center, zoom]
   );
 
   return (
