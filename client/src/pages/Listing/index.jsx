@@ -10,22 +10,24 @@ import DisplayMap from './component/displayMap';
 import { getListingData } from '@/api/listingApi';
 import _ from 'lodash';
 import { isMapBoundsValid } from './utils';
+import qs from 'qs'; // Import qs library for query string manipulation
 
 const Listing = () => {
   const [searchParams, setSearchParams] = useSearchParams({
     // query searh
-    searchQueryState: '',
     // query bound map
     mapBounds: { west: '', east: '', south: '', north: '' },
-    onlyComputerItems: false,
+    // zoom
+    zoom: 15,
+    searchQueryState: '',
   });
 
   const querySearch = searchParams.get('searchQueryState');
   const queryBound = searchParams.get('mapBounds');
-  const onlyComputerItems = searchParams.get('onlyComputerItems') === 'true';
+  const queryZoom = searchParams.get('zoom');
 
-  const [center, setCenter] = useState([-6.903732, 107.618933]);
-  const [listing, setListing] = useState([]);
+  const [center, setCenter] = useState([]);
+  const [zoom, setZoom] = useState(15);
 
   // (First) - Basically check 'mapBounds' query params, and set the center of map depending on the 'mapBounds' if exist
   useEffect(() => {
@@ -54,13 +56,38 @@ const Listing = () => {
           ]);
         }
       }
+    } else {
+      // default value for center, if no value exist
+      setCenter([-6.903732, 107.618933]);
     }
+
+    if (queryZoom) setZoom(queryZoom);
   }, []);
 
   // fetch listing
   const fetchData = async () => {
     try {
-      const result = await getListingData();
+      const parseJsonBound = JSON.parse(queryBound);
+      const { west, east, north, south } = parseJsonBound;
+
+      // Convert string values to numbers
+      const westNumber = parseFloat(west.toFixed(6));
+      const eastNumber = parseFloat(east.toFixed(6));
+      const northNumber = parseFloat(north.toFixed(6));
+      const southNumber = parseFloat(south.toFixed(6));
+      const parseBounds = {
+        west: westNumber,
+        east: eastNumber,
+        north: northNumber,
+        south: southNumber,
+      };
+      // sending bound as a params/query
+      const queryParams = qs.stringify({
+        mapBounds: parseBounds,
+      });
+
+      const result = await getListingData(queryParams);
+      console.log(result, '[result]');
       // setListing(result);
     } catch (error) {
       // setError(error);
@@ -81,20 +108,22 @@ const Listing = () => {
     };
   }, [searchParams]);
 
-  // getting map data (on move from map)
+  // getting map data (map bounds, zoom), and put it into url query
   const getMapData = (map) => {
+    const getZoom = map.getZoom();
     const getMapBounds = map.getBounds();
 
-    const north = getMapBounds._northEast.lat.toFixed(6);
-    const east = getMapBounds._northEast.lng.toFixed(6);
-    const south = getMapBounds._southWest.lat.toFixed(6);
-    const west = getMapBounds._southWest.lng.toFixed(6);
+    const north = getMapBounds._northEast.lat;
+    const east = getMapBounds._northEast.lng;
+    const south = getMapBounds._southWest.lat;
+    const west = getMapBounds._southWest.lng;
     const mapBounds = { north, east, south, west };
     const mapBoundsStringify = JSON.stringify(mapBounds);
 
     setSearchParams(
       (prev) => {
         prev.set('mapBounds', mapBoundsStringify);
+        prev.set('zoom', getZoom);
         return prev;
       },
       { replace: true }
@@ -110,7 +139,7 @@ const Listing = () => {
             <section className="z-10 hidden md:block">
               {/* <div className="relative z-10"> */}
               {/* <Map center={[-6.903732, 107.618933]} zoom={17} /> */}
-              <DisplayMap getMapData={getMapData} center={center} />
+              <DisplayMap getMapData={getMapData} center={center} zoom={zoom} />
               {/* </div> */}
             </section>
             <section className="overflow-y-scroll pt-6 shadow-2xl">

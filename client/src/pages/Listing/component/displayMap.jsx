@@ -1,17 +1,22 @@
 import ExternalStateExample from '@/components/custom/mapTest/mapTest';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const DisplayMap = ({ getMapData, center }) => {
-  const [bound, setBound] = useState();
+const DisplayMap = ({ getMapData, center, zoom }) => {
+  const [convertedCenter, setConvertedCenter] = useState([]);
 
-  // const handleFetchApi = (map) => {
-  //   console.log('fetch api', map);
-  //   console.log('fetch api bounds', map.getBounds());
-  // };
+  useEffect(() => {
+    setConvertedCenter(center.map((value) => parseFloat(value.toFixed(6))));
+  }, [center]);
 
   return (
     <>
-      <ExternalStateExample onMoveHandler={getMapData} center={center} />
+      {convertedCenter.length > 0 && (
+        <ExternalStateExample
+          onMoveHandler={getMapData}
+          center={convertedCenter}
+          zoom={zoom}
+        />
+      )}
     </>
   );
 };

@@ -2,9 +2,9 @@ import axios from 'axios';
 
 import { allListing as _allListing, addListing as _addListing } from './urls';
 
-export const getListingData = async () => {
+export const getListingData = async (listingData) => {
   try {
-    const res = await axios.get(_allListing);
+    const res = await axios.get(`${_allListing}?${listingData}`);
     return res.data;
   } catch (error) {
     return error;
