@@ -142,14 +142,8 @@ const Listing = () => {
 
   return (
     <FullLayout>
-      <div
-        className={
-          listing.length > 0
-            ? 'flex h-full flex-col-reverse pt-[5.8rem]'
-            : 'flex h-full flex-col-reverse'
-        }
-      >
-        <section className="h-full">
+      <div className="flex h-full flex-col-reverse pt-24">
+        <section className="h-full min-h-full">
           {/* <div className="grid-rows-[calc(100% - 4rem)] grid h-full grid-cols-2"> */}
           <div className="grid h-full md:grid-cols-[1fr_375px] 2xl:grid-cols-[1fr_750px]">
             <section className="z-10 hidden md:block">
