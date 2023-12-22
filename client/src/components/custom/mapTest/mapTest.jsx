@@ -1,6 +1,11 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import _ from 'lodash';
+import circleIcon from '@/assets/circle-dark-red.png';
+import './index.css';
+
+// custom icon for marker
+const iconCircle = new L.icon({ iconUrl: circleIcon, iconSize: [16, 16] });
 
 const center = [51.505, -0.09];
 const zoom = 13;
@@ -53,6 +58,7 @@ export default function ExternalStateExample({
       return;
     } else {
       const onMoveDebounced = _.debounce(() => {
+        map.closePopup();
         if (onMoveHandler) onMoveHandler(map);
       }, 400); // Adjust the debounce delay as needed
 
@@ -79,8 +85,39 @@ export default function ExternalStateExample({
         />
         {listing.length > 0 &&
           listing.map((item) => {
+            console.log(item, '[item]');
             return (
-              <Marker position={[item.latitude, item.longitude]}>Test</Marker>
+              <Marker
+                position={[item.latitude, item.longitude]}
+                icon={iconCircle}
+              >
+                <Popup>
+                  <div className="grid min-w-[300px] max-w-[450px] grid-rows-[177px,1fr,auto] shadow-lg">
+                    <div className="h-full">
+                      <img
+                        src="https://photos.zillowstatic.com/fp/ee03a8da9b3fdf3c0090469d9d6e154f-cc_ft_384.webp"
+                        alt=""
+                        className="h-0 min-h-full w-full rounded-t-md object-cover"
+                      />
+                    </div>
+                    <div className="overflow-hidden rounded-b-md bg-white p-2 font-sans">
+                      <div className="max-h-16 overflow-hidden">
+                        <h3 className="break-normal text-2xl font-bold text-neutral-700">
+                          {item.ads_name}
+                        </h3>
+                      </div>
+                      <div className="text-neutral-600">
+                        height {item.height ?? '--'} | length{' '}
+                        {item.length ?? '--'}
+                      </div>
+                      <div className="pt-2 uppercase tracking-wider text-neutral-600">
+                        {item.location}
+                      </div>
+                      <div className="uppercase text-neutral-600">user</div>
+                    </div>
+                  </div>
+                </Popup>
+              </Marker>
             );
           })}
       </MapContainer>
