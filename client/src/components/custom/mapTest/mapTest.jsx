@@ -91,7 +91,7 @@ export default function ExternalStateExample({
                 position={[item.latitude, item.longitude]}
                 icon={iconCircle}
               >
-                <Popup>
+                <Popup keepInView={true} autoPan={false}>
                   <div className="grid min-w-[300px] max-w-[450px] grid-rows-[177px,1fr,auto] shadow-lg">
                     <div className="h-full">
                       <img
