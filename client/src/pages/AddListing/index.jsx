@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { addListing } from '@/api/listingApi';
 import { useNavigate } from 'react-router-dom';
+import { useErrorContext } from '@/context/ErrorProvider';
 
 const inputValidation = {
   title: {
@@ -40,6 +41,7 @@ const inputValidation = {
 
 const AddListing = () => {
   const navigate = useNavigate();
+  const { errors, addError, removeError } = useErrorContext();
   const [locationData, setLocationData] = useState({
     title: '',
     address: '',
@@ -148,6 +150,11 @@ const AddListing = () => {
       // prevent modal
       e.preventDefault();
       setError({ ...responseValidation.error });
+      addError({
+        title: 'Uhm! Something went wrong.',
+        text: 'There were empty or invalid input.',
+        variant: 'red',
+      });
     }
   };
 
@@ -162,6 +169,11 @@ const AddListing = () => {
           const result = await addListing(locationData);
 
           if (result?.success) {
+            addError({
+              title: 'Success!',
+              text: 'Adding listing successful.',
+              variant: 'green',
+            });
             return navigate('/listing');
           }
           // setListing(result);

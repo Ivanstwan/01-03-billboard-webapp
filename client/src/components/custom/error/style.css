@@ -4,8 +4,8 @@
     margin-top: 0px;
   }
   10% {
-    max-height: 40px;
-    margin-top: 2rem;
+    max-height: 5rem;
+    margin-top: 1rem;
     opacity: 1;
     left: 400px;
   }
@@ -18,8 +18,8 @@
   90% {
     opacity: 1;
     left: 0;
-    max-height: 40px;
-    margin-top: 2rem;
+    max-height: 5rem;
+    margin-top: 1rem;
   }
   100% {
     opacity: 0;
@@ -32,7 +32,7 @@
 .animation-try {
   position: relative;
   animation-name: example;
-  animation-duration: 4.8s;
+  animation-duration: 6.8s;
   max-height: 0px;
   left: 400px;
   margin-top: 0px;

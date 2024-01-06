@@ -9,10 +9,12 @@ export const useErrorContext = () => {
 export const ErrorProvider = ({ children }) => {
   const [errors, setErrors] = useState([]);
 
-  const addError = (message) => {
+  const addError = ({ title, text, variant = 'normal' }) => {
     const newError = {
       id: Date.now(),
-      message,
+      title,
+      text,
+      variant,
     };
 
     setErrors((prevErrors) => [...prevErrors, newError]);
@@ -32,7 +34,7 @@ export const ErrorProvider = ({ children }) => {
     // Set a timeout to remove all errors after 10 seconds of inactivity
     const timeoutId = setTimeout(() => {
       setErrors([]);
-    }, 7000);
+    }, 9000);
 
     // Cleanup function to clear the timeout if there are state changes
     return () => clearTimeout(timeoutId);
