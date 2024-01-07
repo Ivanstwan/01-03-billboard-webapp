@@ -1,0 +1,21 @@
+.login-container {
+  margin: 0 auto;
+  width: 450px;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .login {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 450px;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid #dadce0;
+    padding: 48px 40px 36px;
+    flex-shrink: 0;
+    transition: 0.2s;
+  }
+}

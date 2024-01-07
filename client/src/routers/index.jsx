@@ -3,9 +3,11 @@ import { lazy } from 'react';
 import Home from '@/pages/Home';
 import LandingPage from '@/pages/LandingPage';
 import Login from '@/pages/Login';
-import SignUp from '@/pages/SignUp';
 import AddListing from '@/pages/AddListing';
 import Listing from '@/pages/Listing';
+import EditListing from '@/pages/EditListing';
+import MyListing from '@/pages/MyListing';
+import Register from '@/pages/Register';
 
 const NotFound = lazy(() => import('@/pages/NotFound'));
 
@@ -30,17 +32,21 @@ export const publicRoutes = [
     element: <AddListing />,
   },
   {
+    path: '/listing/edit/:id',
+    element: <EditListing />,
+  },
+  {
+    path: '/my-listing',
+    element: <MyListing />,
+  },
+  {
     path: '/login',
     element: <Login />,
   },
-  {
-    path: '/signup',
-    element: <SignUp />,
-  },
   // below is route that should be private, but not yet configure for the login etc
   {
-    path: '/signup',
-    element: <SignUp />,
+    path: '/register',
+    element: <Register />,
   },
   // --------------------------------
   {

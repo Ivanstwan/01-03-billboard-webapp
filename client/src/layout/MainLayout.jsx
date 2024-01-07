@@ -62,6 +62,29 @@ const listingComponents = [
     href: '/listing/add',
     description: 'For listing your advertisement product to the public.',
   },
+  {
+    title: 'My Listing',
+    href: '/my-listing',
+    description: 'To see what advertisement you have listed.',
+  },
+];
+
+const authComponents = [
+  {
+    title: 'Login',
+    href: '/login',
+    description: 'View listed advertisement in your area.',
+  },
+  {
+    title: 'Add Listing',
+    href: '/listing/add',
+    description: 'For listing your advertisement product to the public.',
+  },
+  {
+    title: 'My Listing',
+    href: '/my-listing',
+    description: 'To see what advertisement you have listed.',
+  },
 ];
 
 function NavigationMenuDemo() {
@@ -134,14 +157,30 @@ function NavigationMenuDemo() {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
+          <NavigationMenuTrigger>Auth</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+              {authComponents.map((component) => (
+                <ListItem
+                  key={component.title}
+                  title={component.title}
+                  href={component.href}
+                >
+                  {component.description}
+                </ListItem>
+              ))}
+            </ul>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
           <NavigationMenuLink asChild>
             <Link
-              to="/add-listing"
+              to="/listing"
               className="hover:bg- accent block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none
               transition-colors hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
             >
               <span className="text-sm font-medium leading-none">
-                Add Listing
+                View Listing
               </span>
             </Link>
           </NavigationMenuLink>

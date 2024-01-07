@@ -1,0 +1,43 @@
+.googlelike-input {
+  position: relative;
+
+  input {
+    border: none;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    padding: 4px 8px 6px 8px; // 6px 8px
+    font-size: 0.875rem; // 14px
+    line-height: 1.25rem; // 20px
+    width: 100%;
+  }
+
+  .googlelike-input--label {
+    position: absolute;
+    pointer-events: none;
+    color: #5f6368;
+    font-size: 0.875rem; // 14px
+    line-height: 1rem; // 16px
+    left: 0.5rem;
+    // calculate by add padding bottom input + (line-height - font-size) / 2
+    // calculate by add padding bottom input (6px) + (1.25rem - 0.875rem) / 2
+    bottom: calc(6px + (1.25rem - 0.875rem) / 2);
+    transition: 0.15s;
+  }
+
+  input:focus + .googlelike-input--label,
+  input:not(:placeholder-shown) + .googlelike-input--label {
+    bottom: 0;
+    left: 0;
+    transform: scale(0.75) translateY(-2.125rem);
+    background-color: white;
+    padding: 0 0.125rem;
+  }
+
+  input:focus {
+    outline: 2px solid #5593e6;
+  }
+
+  input:focus + .googlelike-input--label {
+    color: #5593e6;
+  }
+}
