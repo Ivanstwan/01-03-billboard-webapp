@@ -4,11 +4,12 @@ import pool from '../config/db.config.js';
 // import authRouter from './auth.router';
 // import usersRouter from './users.router';
 import listingRouter from './listing.router.js';
+import authRouter from './auth.router.js';
 
 const routers = express.Router();
 
 routers.use('/listing', listingRouter);
-// router.use('/auth', authRouter);
+routers.use('/auth', authRouter);
 // router.use('/users', usersRouter);
 
 routers.use('/test', async (req, res) => {
