@@ -8,6 +8,7 @@ import Listing from '@/pages/Listing';
 import EditListing from '@/pages/EditListing';
 import MyListing from '@/pages/MyListing';
 import Register from '@/pages/Register';
+import RegisterPhase2 from '@/pages/RegisterPhase2';
 
 const NotFound = lazy(() => import('@/pages/NotFound'));
 
@@ -47,6 +48,10 @@ export const publicRoutes = [
   {
     path: '/register',
     element: <Register />,
+  },
+  {
+    path: '/register/create',
+    element: <RegisterPhase2 />,
   },
   // --------------------------------
   {

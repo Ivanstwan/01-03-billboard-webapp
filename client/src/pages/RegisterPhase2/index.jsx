@@ -1,32 +1,35 @@
-import { useContext, useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import AuthContext from '@/context/AuthProvider';
+import { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import InputGoogleLike from '@/components/custom/input/InputGoogleLike';
+import { registerUser } from '@/api/authApi';
 import { useErrorContext } from '@/context/ErrorProvider';
-import { emailRegex } from '@/constant/regex';
-import { register } from '@/api/authApi';
 
-const Register = () => {
-  const userRef = useRef();
+const RegisterPhase2 = () => {
+  const pwdRef = useRef();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const token = params.get('token');
 
   const { errors, addError, removeError } = useErrorContext();
 
-  const [user, setUser] = useState('');
+  const [pwd, setPwd] = useState('');
   const [success, setSuccess] = useState(false);
 
   // focus to email/username first loaded
   useEffect(() => {
-    userRef.current.focus();
+    pwdRef.current.focus();
   }, []);
 
   const handleSubmit = async () => {
     // will disabled the register button
     setSuccess(true);
 
-    if (!emailRegex.test(user)) {
+    const passwordRegex = /^.{8,64}$/;
+
+    if (!passwordRegex.test(pwd)) {
       addError({
-        title: 'Email Not Valid',
-        text: 'Please enter valid email.',
+        title: 'Password Not Valid',
+        text: 'Please enter a password between 8 and 64 characters.',
         variant: 'red',
       });
       // will enabled the register button
@@ -35,7 +38,7 @@ const Register = () => {
     }
 
     try {
-      const result = await register(user);
+      const result = await registerUser(pwd, token);
 
       if (result.status !== 200) {
         // add error message
@@ -68,15 +71,15 @@ const Register = () => {
       <div className="w-450 flex h-auto flex-shrink-0 flex-col items-center rounded-lg border border-solid border-gray-300 bg-white p-12 transition duration-200">
         {/* <div>Logo</div> */}
         <form className="w-full">
-          <div className="pb-6 text-2xl font-semibold">Register</div>
+          <div className="pb-6 text-2xl font-semibold">Set your password</div>
           <div className="py-2">
             <InputGoogleLike
-              type="email"
-              myRef={userRef}
-              onChange={(e) => setUser(e.target.value)}
-              value={user}
-              label="Email"
-              name="email"
+              type="password"
+              myRef={pwdRef}
+              onChange={(e) => setPwd(e.target.value)}
+              value={pwd}
+              label="Password"
+              name="password"
             />
           </div>
           <button
@@ -89,18 +92,12 @@ const Register = () => {
             onClick={handleSubmit}
             disabled={success}
           >
-            Register
+            Set Password
           </button>
         </form>
-        <span className="pt-8 text-base">
-          Already have an account? go{' '}
-          <Link to="/login" className="font-semibold">
-            Sign In
-          </Link>
-        </span>
       </div>
     </div>
   );
 };
 
-export default Register;
+export default RegisterPhase2;
