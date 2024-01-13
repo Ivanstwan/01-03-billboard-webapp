@@ -11,16 +11,26 @@ const register = async (req, res) => {
   const userEmail = req.body.email;
 
   try {
-    const secret = process.env.JWT_SECRET;
-    const payload = {
-      email: userEmail,
-    };
-    const token = jwt.sign(payload, secret, { expiresIn: '5m' });
-    const link = `http://localhost:3000/register/create?token=${token}`;
+    // Check if email already exist
+    const query = 'SELECT * FROM `user` WHERE email = ?;';
+    const [rows, fields] = await pool.query(query, [userEmail]);
 
-    sendPasswordResetEmail(userEmail, link);
+    // If email not exist, then create new user
+    if (rows.length === 0) {
+      const secret = process.env.JWT_SECRET;
+      const payload = {
+        email: userEmail,
+      };
+      const token = jwt.sign(payload, secret, { expiresIn: '5m' });
+      const link = `http://localhost:3000/register/create?token=${token}`;
 
-    res.status(200).send('Registration link has been sent to email!');
+      sendPasswordResetEmail(userEmail, link);
+
+      res.status(200).send('Registration link has been sent to email!');
+      return;
+    }
+
+    res.status(400).send('Email already registered.');
   } catch (err) {
     console.log('Error sending email:', err);
     res.status(500).send('Internal Server Error');
