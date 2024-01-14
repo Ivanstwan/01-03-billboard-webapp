@@ -1,6 +1,5 @@
-import { useContext, useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import AuthContext from '@/context/AuthProvider';
+import { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import InputGoogleLike from '@/components/custom/input/InputGoogleLike';
 import { useErrorContext } from '@/context/ErrorProvider';
 import { emailRegex } from '@/constant/regex';

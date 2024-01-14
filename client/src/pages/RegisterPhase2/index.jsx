@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import InputGoogleLike from '@/components/custom/input/InputGoogleLike';
 import { registerUser } from '@/api/authApi';
 import { useErrorContext } from '@/context/ErrorProvider';
 
 const RegisterPhase2 = () => {
+  const navigate = useNavigate();
   const pwdRef = useRef();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
@@ -53,9 +54,10 @@ const RegisterPhase2 = () => {
       // add success message
       addError({
         title: 'Success!',
-        text: 'Check your email to create password.',
+        text: 'Account created.',
         variant: 'green',
       });
+      return navigate('/login');
     } catch (error) {
       // add error message
       addError({
