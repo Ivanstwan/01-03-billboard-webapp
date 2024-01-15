@@ -3,6 +3,7 @@ import axios from 'axios';
 import {
   registerEndpoint as _registerEndpoint,
   registerUserEndpoint as _registerUserEndpoint,
+  loginEndpoint as _loginEndpoint,
 } from './urls';
 
 // register - phase 1 - input email, and send unique email to user
@@ -21,6 +22,19 @@ export const registerUser = async (password, token) => {
     const res = await axios.post(_registerUserEndpoint, {
       password: password,
       token: token,
+    });
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+
+// login
+export const login = async (email, password) => {
+  try {
+    const res = await axios.post(_loginEndpoint, {
+      email: email,
+      password: password,
     });
     return res;
   } catch (error) {
