@@ -43,6 +43,7 @@ const Register = () => {
           text: 'Sorry we failed to register your email.',
           variant: 'red',
         });
+        setSuccess(false);
         return;
       }
 
@@ -59,6 +60,14 @@ const Register = () => {
         text: 'Sorry we failed to register your email.',
         variant: 'red',
       });
+      setSuccess(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSubmit();
     }
   };
 
@@ -66,7 +75,7 @@ const Register = () => {
     <div className="w-450 mx-auto flex h-screen items-center justify-center">
       <div className="w-450 flex h-auto flex-shrink-0 flex-col items-center rounded-lg border border-solid border-gray-300 bg-white p-12 transition duration-200">
         {/* <div>Logo</div> */}
-        <form className="w-full">
+        <form className="w-full" onKeyDown={handleKeyDown}>
           <div className="pb-6 text-2xl font-semibold">Register</div>
           <div className="py-2">
             <InputGoogleLike
