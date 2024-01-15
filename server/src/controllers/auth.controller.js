@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 import { sendPasswordResetEmail } from '../utils/utilsEmail.js';
 import pool from '../config/db.config.js';
 import { hashPassword } from '../utils/utilsPassword.js';
@@ -80,4 +81,31 @@ const registerCreateUser = async (req, res) => {
   }
 };
 
-export { register, registerCreateUser };
+// register - phase 1 - send unique link to user email
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Check if user exist
+    const query = 'SELECT pwd FROM `user` WHERE email = ?;';
+    const [rows, fields] = await pool.query(query, [email]);
+
+    // If user with email exist, then get hash pwd
+    if (rows.length > 0) {
+      const result = rows[0];
+      const match = await bcrypt.compare(password, result.pwd);
+
+      if (match) {
+        return res.status(200).send('User Logged in!');
+      }
+      return res.status(401).send('Cannot login.');
+    }
+
+    return res.status(401).send('Cannot login.');
+  } catch (err) {
+    console.log('Error sending email:', err);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+export { register, registerCreateUser, login };
