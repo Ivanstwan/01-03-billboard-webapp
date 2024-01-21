@@ -1,5 +1,4 @@
-import axios from 'axios';
-
+import axios from './axios/axios';
 import { allListing as _allListing, addListing as _addListing } from './urls';
 
 export const getListingData = async (listingData) => {

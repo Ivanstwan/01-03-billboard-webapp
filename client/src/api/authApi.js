@@ -1,5 +1,5 @@
-import axios from 'axios';
-
+import axios from './axios/axios';
+import axiosWIthCredential from './axios/axiosWIthCredential';
 import {
   registerEndpoint as _registerEndpoint,
   registerUserEndpoint as _registerUserEndpoint,
@@ -32,10 +32,29 @@ export const registerUser = async (password, token) => {
 // login
 export const login = async (email, password) => {
   try {
-    const res = await axios.post(_loginEndpoint, {
+    const res = await axiosWIthCredential.post(_loginEndpoint, {
       email: email,
       password: password,
     });
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+
+// login
+export const test = async (email, password) => {
+  try {
+    const res = await axios.post(
+      'http://localhost:8000/api/auth/test',
+      {
+        email: email,
+        password: password,
+      },
+      {
+        withCredentials: true,
+      }
+    );
     return res;
   } catch (error) {
     return error;
