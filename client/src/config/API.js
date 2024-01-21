@@ -13,6 +13,12 @@ const getApiUrl = () => {
 
 const config = {
   BASE_URL: getApiUrl(),
+  withCredentials:
+    process.env.REACT_APP_ENV === 'dev' || !process.env.REACT_APP_ENV
+      ? true
+      : false,
 };
+
+console.log(config);
 
 export default config;

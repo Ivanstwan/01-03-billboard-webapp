@@ -1,5 +1,4 @@
 import axios from './axios/axios';
-import axiosWIthCredential from './axios/axiosWIthCredential';
 import {
   registerEndpoint as _registerEndpoint,
   registerUserEndpoint as _registerUserEndpoint,
@@ -32,7 +31,7 @@ export const registerUser = async (password, token) => {
 // login
 export const login = async (email, password) => {
   try {
-    const res = await axiosWIthCredential.post(_loginEndpoint, {
+    const res = await axios.post(_loginEndpoint, {
       email: email,
       password: password,
     });
