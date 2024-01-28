@@ -14,7 +14,12 @@ app.use(compression());
 app.use(helmet());
 
 // cors enabled
-app.use(cors());
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  })
+);
 
 // parse cookie
 app.use(cookieParser());

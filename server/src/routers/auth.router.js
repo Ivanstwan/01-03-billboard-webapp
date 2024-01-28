@@ -1,6 +1,8 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
 import { authController } from '../controllers/index.js';
+import { authenticateToken } from '../middlewares/auth.middleware.js';
+import { authRefreshToken } from '../controllers/auth.controller.js';
 
 const router = express.Router();
 
@@ -70,5 +72,13 @@ router
       authController.login(req, res);
     }
   );
+
+// Check Access Token
+router.route('/checkuser').get(authenticateToken, (req, res) => {
+  res.status(200).json(req.decoded);
+});
+
+// Get new Access Token with Refresh Token
+router.route('/token').get(authRefreshToken);
 
 export default router;
