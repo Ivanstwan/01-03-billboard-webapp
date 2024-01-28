@@ -9,6 +9,7 @@ import { login } from '@/api/authApi';
 
 const Login = () => {
   const { setAuth } = useContext(AuthContext);
+  const navigate = useNavigate();
   const userRef = useRef();
 
   const { errors, addError, removeError } = useErrorContext();
@@ -75,12 +76,19 @@ const Login = () => {
         return;
       }
 
+      const { username, email, img, accessToken } = result.data;
+
+      // set access token in local storage
+      localStorage.setItem('access_token', accessToken);
+
+      setAuth({ username, email, img });
       // add success message
       addError({
         title: 'Success!',
         text: 'Login successful.',
         variant: 'green',
       });
+      return navigate('/listing');
     } catch (error) {
       // add error message
       addError({
