@@ -41,19 +41,24 @@ export const login = async (email, password) => {
   }
 };
 
-// login
-export const test = async (email, password) => {
+// Check Access Token
+export const checkAuthToken = async (accessToken) => {
   try {
-    const res = await axios.post(
-      'http://localhost:8000/api/auth/test',
-      {
-        email: email,
-        password: password,
-      },
-      {
-        withCredentials: true,
-      }
-    );
+    const res = await axios.get('http://localhost:8000/api/auth/checkuser', {
+      withCredentials: true,
+      headers: { authorization: `Bearer ${accessToken}` },
+    });
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getNewAccessToken = async () => {
+  try {
+    const res = await axios.get('http://localhost:8000/api/auth/token', {
+      withCredentials: true,
+    });
     return res;
   } catch (error) {
     return error;
