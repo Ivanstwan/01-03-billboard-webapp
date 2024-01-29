@@ -57,12 +57,6 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ auth, initAuth, setAuth }}>
-      <div className="fixed left-0 top-0 z-[999999] border-4 border-red-700 bg-white p-5">
-        <p>{auth?.username ?? 'No Username'}</p>
-        <p>{auth?.email ?? 'No Email'}</p>
-        <p>{auth?.img ?? 'No Img'}</p>
-        <p>{auth?.accessToken ?? 'No Token'}</p>
-      </div>
       {children}
     </AuthContext.Provider>
   );

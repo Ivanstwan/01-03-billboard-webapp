@@ -12,6 +12,9 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
+import { useContext } from 'react';
+import AuthContext from '@/context/AuthProvider';
+import NoUserPhoto from '@/assets/no-user-photo.png';
 
 const components = [
   {
@@ -86,6 +89,45 @@ const authComponents = [
     description: 'To see what advertisement you have listed.',
   },
 ];
+
+const UserNavigation = ({ auth }) => {
+  return (
+    <NavigationMenu customRightSide={true}>
+      <NavigationMenuList>
+        <NavigationMenuItem>
+          <NavigationMenuTrigger className="px-2">
+            <div className="flex flex-1 basis-[200px] items-center justify-end gap-2 pr-2">
+              <div>
+                <img
+                  src={auth?.img ?? NoUserPhoto}
+                  alt="No User Photo"
+                  className="h-8 w-8 rounded-full"
+                />
+              </div>
+              <div>
+                <p>{auth?.username ?? auth?.email ?? ''}</p>
+                {/* <p className="text-sm">{auth?.email ?? 'No Email'}</p> */}
+              </div>
+            </div>
+          </NavigationMenuTrigger>
+          <NavigationMenuContent className="">
+            <ul className="grid gap-3 p-4 md:w-[300px]">
+              {authComponents.map((component) => (
+                <ListItem
+                  key={component.title}
+                  title={component.title}
+                  href={component.href}
+                >
+                  {component.description}
+                </ListItem>
+              ))}
+            </ul>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
+  );
+};
 
 function NavigationMenuDemo() {
   return (
@@ -226,21 +268,25 @@ const ListItem = React.forwardRef(
 ListItem.displayName = 'ListItem';
 
 export const MainLayout = ({ children }) => {
+  const { auth, setAuth, initAuth } = useContext(AuthContext);
   return (
     <div className="flex h-screen bg-gray-200">
       {/* can use sidebar below */}
       {/* <MobileSidebar /> */}
       {/* <Sidebar /> */}
       <div className="flex min-h-full w-0 flex-1 flex-col">
-        <div className="bg-opacity-15 fixed top-0 z-[1001] flex h-16 w-full flex-shrink-0 bg-white py-6 shadow-md">
+        <div className="bg-opacity-15 fixed top-0 z-[1001] flex h-16 w-full flex-shrink-0 justify-between bg-white py-6 shadow-md">
           <button className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden">
             {/* <MenuIcon className="h-6 w-6" aria-hidden="true" /> */}
             Possible Hamburger OR open menu
           </button>
-          <div className="flex flex-1 px-4">
+          <div className="flex px-4">
             <div className="ml-4 flex items-center md:ml-6">
               <NavigationMenuDemo />
             </div>
+          </div>
+          <div className="flex flex-1 basis-[200px] items-center justify-end gap-4 pr-10">
+            <UserNavigation auth={auth} />
           </div>
         </div>
         <section className="flex flex-1 flex-col">
@@ -262,6 +308,7 @@ export const MainLayout = ({ children }) => {
 };
 
 export const FullLayout = ({ children }) => {
+  const { auth, setAuth, initAuth } = useContext(AuthContext);
   return (
     <div className="flex h-screen flex-col-reverse bg-gray-200">
       {/* can use sidebar below */}
@@ -276,6 +323,9 @@ export const FullLayout = ({ children }) => {
           <div className="ml-4 flex items-center md:ml-6">
             <NavigationMenuDemo />
           </div>
+        </div>
+        <div className="flex flex-1 basis-[200px] items-center justify-end gap-4 pr-10">
+          <UserNavigation auth={auth} />
         </div>
       </div>
       {/* <main className="relative mt-16 grid grow grid-cols-[minmax(269px,1fr)_minmax(500px,4fr)] grid-rows-1 gap-8"> */}
