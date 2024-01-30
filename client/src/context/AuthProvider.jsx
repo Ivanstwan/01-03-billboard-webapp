@@ -49,6 +49,7 @@ export const AuthProvider = ({ children }) => {
           console.error('Error making authenticated request:', error);
         }
       }
+      setInitAuth(true);
       console.log('first init 2');
     };
 

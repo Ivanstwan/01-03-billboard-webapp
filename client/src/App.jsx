@@ -13,8 +13,8 @@ function App() {
 
   return (
     <AppProvider>
-      <AuthProvider>
-        <ErrorProvider>
+      <ErrorProvider>
+        <AuthProvider>
           <ErrorNotification />
           <Routes>
             {/* private routes */}
@@ -37,8 +37,8 @@ function App() {
               />
             ))}
           </Routes>
-        </ErrorProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </ErrorProvider>
     </AppProvider>
   );
 }

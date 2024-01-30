@@ -1,5 +1,5 @@
 import { useContext, useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Login.scss';
 import AuthContext from '@/context/AuthProvider';
 import InputGoogleLike from '@/components/custom/input/InputGoogleLike';
@@ -8,10 +8,17 @@ import { useErrorContext } from '@/context/ErrorProvider';
 import { login } from '@/api/authApi';
 
 const Login = () => {
+  // Redirect to intended page, after login
+  // e.g. accessing /home -> login -> redirect to /home again
+  const location = useLocation();
+  const { from } = location.state || { from: { pathname: '/' } };
+
+  // To set context auth after login
   const { setAuth } = useContext(AuthContext);
   const navigate = useNavigate();
   const userRef = useRef();
 
+  // For adding error message
   const { errors, addError, removeError } = useErrorContext();
 
   const [user, setUser] = useState('');
@@ -88,6 +95,11 @@ const Login = () => {
         text: 'Login successful.',
         variant: 'green',
       });
+
+      // If user redirected to 'login', because accessing private route, after login redirect back to that route
+      if (from.pathname !== '/') {
+        return navigate(from.pathname);
+      }
       return navigate('/listing');
     } catch (error) {
       // add error message

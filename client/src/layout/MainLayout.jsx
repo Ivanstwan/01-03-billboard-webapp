@@ -105,7 +105,7 @@ const UserNavigation = ({ auth }) => {
                 />
               </div>
               <div>
-                <p>{auth?.username ?? auth?.email ?? ''}</p>
+                <p>{auth?.username ?? auth?.email ?? 'Go Login?'}</p>
                 {/* <p className="text-sm">{auth?.email ?? 'No Email'}</p> */}
               </div>
             </div>

@@ -14,6 +14,10 @@ const NotFound = lazy(() => import('@/pages/NotFound'));
 
 export const privateRoutes = [
   {
+    path: '/listing/add',
+    element: <AddListing />,
+  },
+  {
     path: '/home',
     element: <Home />,
   },
@@ -27,10 +31,6 @@ export const publicRoutes = [
   {
     path: '/listing',
     element: <Listing />,
-  },
-  {
-    path: '/listing/add',
-    element: <AddListing />,
   },
   {
     path: '/listing/edit/:id',
