@@ -1,5 +1,6 @@
-import { Input } from '@/components/ui/input';
 import React, { useState } from 'react';
+
+import { Input } from '@/components/ui/input';
 
 const Coordinate = ({ onChange, name }) => {
   const [size, setSize] = useState({ x: 0, y: 0 });

@@ -1,5 +1,6 @@
-import ExternalStateExample from '@/components/custom/mapTest/mapTest';
 import React, { useEffect, useState } from 'react';
+
+import ExternalStateExample from '@/components/custom/mapTest/mapTest';
 
 const DisplayMap = ({ getMapData, center, zoom, listing }) => {
   const [convertedCenter, setConvertedCenter] = useState([]);

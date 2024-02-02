@@ -1,4 +1,5 @@
 import { useLocation, Navigate, Outlet } from 'react-router-dom';
+
 import useAuth from '@/hooks/useAuth';
 import { Spinner } from '@/components/ui';
 import { useErrorContext } from '@/context/ErrorProvider';

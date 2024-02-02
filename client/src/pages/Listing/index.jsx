@@ -1,16 +1,18 @@
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import _ from 'lodash';
+import qs from 'qs'; // Import qs library for query string manipulation
+
 import Map from '@/components/custom/map/map';
 import Modal from '@/components/custom/modal.jsx/modal';
 import { Input } from '@/components/ui/input';
-import { FullLayout } from '@/layout';
-import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { FullLayoutFixed } from '@/layout';
 import data from './dummyResponseData.json';
 import Carousel from '@/components/custom/carousel/carousel';
 import DisplayMap from './component/displayMap';
 import { getListingData } from '@/api/listingApi';
-import _ from 'lodash';
 import { isMapBoundsValid } from './utils';
-import qs from 'qs'; // Import qs library for query string manipulation
+import NoImage from '@/assets/no-image.webp';
 
 const Listing = () => {
   const [searchParams, setSearchParams] = useSearchParams({
@@ -141,7 +143,7 @@ const Listing = () => {
   };
 
   return (
-    <FullLayout>
+    <FullLayoutFixed>
       <div className="flex h-full flex-col-reverse pt-24">
         <section className="h-full min-h-full">
           {/* <div className="grid-rows-[calc(100% - 4rem)] grid h-full grid-cols-2"> */}
@@ -164,7 +166,7 @@ const Listing = () => {
                       return (
                         <>
                           <Modal>
-                            <div className="overflow-hidden">
+                            <div className="overflow-hidden shadow-sm">
                               {item.carouselPhotos?.length ? (
                                 <Carousel
                                   images={item.carouselPhotos.slice(0, 5)}
@@ -172,9 +174,9 @@ const Listing = () => {
                               ) : (
                                 <div className="flex h-full w-full items-center justify-center">
                                   <img
-                                    src="https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg"
+                                    src={NoImage}
                                     alt="no image"
-                                    className="max-h-96 w-full max-w-md rounded-lg object-contain shadow-lg"
+                                    className="max-h-96 w-[70%] max-w-md rounded-lg object-contain opacity-70"
                                   />
                                 </div>
                               )}
@@ -244,7 +246,7 @@ const Listing = () => {
           />
         </section>
       </div>
-    </FullLayout>
+    </FullLayoutFixed>
   );
 };
 

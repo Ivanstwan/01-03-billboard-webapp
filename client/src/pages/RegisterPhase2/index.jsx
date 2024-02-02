@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+
 import InputGoogleLike from '@/components/custom/input/InputGoogleLike';
 import { registerUser } from '@/api/authApi';
 import { useErrorContext } from '@/context/ErrorProvider';

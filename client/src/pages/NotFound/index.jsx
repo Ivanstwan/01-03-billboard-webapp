@@ -1,6 +1,7 @@
 import React from 'react';
-import OrangeCat from '@/assets/orange-cat.png';
 import { Link } from 'react-router-dom';
+
+import OrangeCat from '@/assets/orange-cat.png';
 
 const NotFound = () => {
   return (

@@ -1,4 +1,5 @@
 import React from 'react';
+
 import billboardGif from '@/assets/billboard.gif';
 import videotronGif from '@/assets/videotron.gif';
 

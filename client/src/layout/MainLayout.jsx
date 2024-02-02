@@ -267,6 +267,7 @@ const ListItem = React.forwardRef(
 );
 ListItem.displayName = 'ListItem';
 
+// Layout, With Sidebar
 export const MainLayout = ({ children }) => {
   const { auth, setAuth, initAuth } = useContext(AuthContext);
   return (
@@ -307,7 +308,8 @@ export const MainLayout = ({ children }) => {
   );
 };
 
-export const FullLayout = ({ children }) => {
+// Full Screen (height max screen), No Scrollable
+export const FullLayoutFixed = ({ children }) => {
   const { auth, setAuth, initAuth } = useContext(AuthContext);
   return (
     <div className="flex h-screen flex-col-reverse bg-gray-200">
@@ -331,6 +333,38 @@ export const FullLayout = ({ children }) => {
       {/* <main className="relative mt-16 grid grow grid-cols-[minmax(269px,1fr)_minmax(500px,4fr)] grid-rows-1 gap-8"> */}
       <main style={{ height: 'calc(100% - 4rem)' }}>
         <article className="h-full rounded-[2px] bg-white shadow-md">
+          {children}
+        </article>
+      </main>
+    </div>
+  );
+};
+
+// Full Screen (height auto), Scrollable
+export const FullLayoutScrollable = ({ children }) => {
+  const { auth, setAuth, initAuth } = useContext(AuthContext);
+  return (
+    <div className="flex h-screen flex-col-reverse bg-gray-200">
+      {/* can use sidebar below */}
+      {/* <MobileSidebar /> */}
+      {/* <Sidebar /> */}
+      <div className="bg-opacity-15 fixed top-0 z-[1001] flex h-16 w-full flex-shrink-0 bg-white py-6 shadow-md">
+        <button className="border-r border-gray-200 px-4 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 md:hidden">
+          {/* <MenuIcon className="h-6 w-6" aria-hidden="true" /> */}
+          Possible Hamburger OR open menu
+        </button>
+        <div className="flex flex-1 px-4">
+          <div className="ml-4 flex items-center md:ml-6">
+            <NavigationMenuDemo />
+          </div>
+        </div>
+        <div className="flex flex-1 basis-[200px] items-center justify-end gap-4 pr-10">
+          <UserNavigation auth={auth} />
+        </div>
+      </div>
+      {/* <main className="relative mt-16 grid grow grid-cols-[minmax(269px,1fr)_minmax(500px,4fr)] grid-rows-1 gap-8"> */}
+      <main style={{ height: 'calc(100% - 4rem)' }}>
+        <article className="h-auto min-h-full rounded-[2px] bg-white shadow-md">
           {children}
         </article>
       </main>
