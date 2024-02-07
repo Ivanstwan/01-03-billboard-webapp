@@ -52,9 +52,18 @@ const addListing = async (req, res) => {
 // e.g. lat -6.7 to -6.8, and long 115.1 to 115.2 (like a square area)
 const getListingWithinArea = async (req, res) => {
   try {
-    let query = 'SELECT * FROM `advertisement` LIMIT ?;';
-    let values = [1];
+    let query = 'SELECT * FROM `advertisement`';
+    const values = [];
 
+    // to not add ' AND' for first init
+    let firstInit = true;
+
+    // add WHERE if query not empty
+    if (req.query?.mapBounds || req.query?.userId) {
+      query += ' WHERE';
+    }
+
+    // Check if mapBounds is provided in the query
     if (req.query?.mapBounds) {
       const { north, east, west, south } = JSON.parse(req.query.mapBounds);
 
@@ -64,10 +73,26 @@ const getListingWithinArea = async (req, res) => {
       const floatEast = parseFloat(east);
       const floatWest = parseFloat(west);
 
-      query =
-        'SELECT * FROM `advertisement` WHERE `latitude` BETWEEN ? AND ? AND `longitude` BETWEEN ? AND ? LIMIT ?;';
-      values = [floatSouth, floatNorth, floatWest, floatEast, 50];
+      query += ' `latitude` BETWEEN ? AND ? AND `longitude` BETWEEN ? AND ?';
+      values.push(floatSouth, floatNorth, floatWest, floatEast);
+      firstInit = false;
     }
+
+    // Check if userId is provided in the query
+    if (req.query?.userId) {
+      if (firstInit) {
+        query += ' `user_id` = ?';
+        firstInit = false;
+      } else {
+        query += ' AND `user_id` = ?';
+      }
+
+      values.push(req.query.userId);
+    }
+
+    // Add limit & semicolon to the end of the query
+    query += ' LIMIT ?;';
+    values.push(50);
 
     const [rows, fields] = await pool.query(query, values);
 
