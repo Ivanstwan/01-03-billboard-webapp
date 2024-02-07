@@ -14,19 +14,27 @@ import { getListingData } from '@/api/listingApi';
 import { isMapBoundsValid } from './utils';
 import NoImage from '@/assets/no-image.webp';
 
+// Check if value is [object Object],
+// why? because if query empty (e.g. queryBound, instead of returning value, it return '[object Object])
+function isObjectObject(value) {
+  return value === '[object Object]';
+}
+
 const Listing = () => {
   const [searchParams, setSearchParams] = useSearchParams({
     // query searh
     // query bound map
     mapBounds: { west: '', east: '', south: '', north: '' },
     // zoom
-    zoom: 15,
+    zoom: 11,
     searchQueryState: '',
+    userId: '',
   });
 
   const querySearch = searchParams.get('searchQueryState');
   const queryBound = searchParams.get('mapBounds');
   const queryZoom = searchParams.get('zoom');
+  const queryUserId = searchParams.get('userId');
 
   const [center, setCenter] = useState([]);
   const [zoom, setZoom] = useState(15);
@@ -35,7 +43,7 @@ const Listing = () => {
   // (First) - Basically check 'mapBounds' query params, and set the center of map depending on the 'mapBounds' if exist
   useEffect(() => {
     // set center map, if query bound exist
-    if (queryBound && isMapBoundsValid(queryBound)) {
+    if (isObjectObject(queryBound) && isMapBoundsValid(queryBound)) {
       const parseJsonBound = JSON.parse(queryBound);
       const { west, east, north, south } = parseJsonBound;
 
@@ -70,30 +78,41 @@ const Listing = () => {
   // fetch listing
   const fetchData = async () => {
     try {
-      const parseJsonBound = JSON.parse(queryBound);
-      const { west, east, north, south } = parseJsonBound;
+      let parseBounds;
 
-      // Convert string values to numbers
-      const westNumber = parseFloat(west.toFixed(6));
-      const eastNumber = parseFloat(east.toFixed(6));
-      const northNumber = parseFloat(north.toFixed(6));
-      const southNumber = parseFloat(south.toFixed(6));
-      const parseBounds = {
-        west: westNumber,
-        east: eastNumber,
-        north: northNumber,
-        south: southNumber,
-      };
+      if (!isObjectObject(queryBound)) {
+        const parseJsonBound = JSON.parse(queryBound);
+        const { west, east, north, south } = parseJsonBound;
+
+        const westNumber = parseFloat(west.toFixed(6));
+        const eastNumber = parseFloat(east.toFixed(6));
+        const northNumber = parseFloat(north.toFixed(6));
+        const southNumber = parseFloat(south.toFixed(6));
+        parseBounds = {
+          west: westNumber,
+          east: eastNumber,
+          north: northNumber,
+          south: southNumber,
+        };
+      }
 
       // sending bound as a params/query
       const queryParams = qs.stringify({
         mapBounds: JSON.stringify(parseBounds),
+        userId: queryUserId,
       });
 
       const result = await getListingData(queryParams);
-      setListing(result);
+
+      // Filter value with no latitude or longitude
+      setListing(
+        result.filter(
+          (obj) => (obj.latitude !== null) & (obj.longitude !== null)
+        )
+      );
     } catch (error) {
       // setError(error);
+      console.error(error);
     } finally {
       // setIsLoading(false);
     }

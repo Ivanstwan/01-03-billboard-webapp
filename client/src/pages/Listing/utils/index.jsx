@@ -1,4 +1,8 @@
 export function isMapBoundsValid(mapBounds) {
+  if (mapBounds) {
+    return false;
+  }
+
   // Check if mapBounds is a non-empty string
   if (typeof mapBounds !== 'string' || mapBounds.trim() === '') {
     console.log('Invalid mapBounds: not a non-empty string');
