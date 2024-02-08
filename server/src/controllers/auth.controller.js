@@ -100,7 +100,12 @@ const login = async (req, res) => {
 
       // If user password match, user OK
       if (match) {
-        const accessToken = await generateAccessToken({ email: userEmail });
+        const accessToken = await generateAccessToken({
+          username,
+          email: userEmail,
+          img,
+          user_id: userId,
+        });
 
         const refreshToken = await jwt.sign(
           { userId },
@@ -131,9 +136,13 @@ const login = async (req, res) => {
           maxAge: 24 * 60 * 60 * 1000,
         });
 
-        return res
-          .status(200)
-          .json({ username, email: userEmail, img, accessToken });
+        return res.status(200).json({
+          username,
+          email: userEmail,
+          img,
+          access_token: accessToken,
+          user_id: userId,
+        });
       }
       return res.status(401).send('Cannot login.');
     }
@@ -173,10 +182,19 @@ const authRefreshToken = async (req, res) => {
 
     // Compare the dates
     if (expiresDateToken > currDate) {
-      const accessToken = await generateAccessToken({ email });
-      return res
-        .status(200)
-        .json({ username, email, img, access_token: accessToken });
+      const accessToken = await generateAccessToken({
+        username,
+        email,
+        img,
+        user_id: userId,
+      });
+      return res.status(200).json({
+        username,
+        email,
+        img,
+        access_token: accessToken,
+        user_id: userId,
+      });
     }
 
     return res.status(401).send('Not Authorized.');

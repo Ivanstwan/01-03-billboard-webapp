@@ -50,7 +50,6 @@ export const AuthProvider = ({ children }) => {
         }
       }
       setInitAuth(true);
-      console.log('first init 2');
     };
 
     checkAccessToken();

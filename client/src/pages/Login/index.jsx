@@ -84,12 +84,12 @@ const Login = () => {
         return;
       }
 
-      const { username, email, img, accessToken } = result.data;
+      const { username, email, img, access_token } = result.data;
 
       // set access token in local storage
-      localStorage.setItem('access_token', accessToken);
+      localStorage.setItem('access_token', access_token);
 
-      setAuth({ username, email, img });
+      setAuth({ username, email, img, access_token });
       // add success message
       addError({
         title: 'Success!',
