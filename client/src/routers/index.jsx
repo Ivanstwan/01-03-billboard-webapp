@@ -13,10 +13,20 @@ import RegisterPhase2 from '@/pages/RegisterPhase2';
 const NotFound = lazy(() => import('@/pages/NotFound'));
 
 export const privateRoutes = [
+  // Listing
   {
     path: '/listing/add',
     element: <AddListing />,
   },
+  {
+    path: '/listing/edit/:id',
+    element: <EditListing />,
+  },
+  {
+    path: '/my-listing',
+    element: <MyListing />,
+  },
+  // Home
   {
     path: '/home',
     element: <Home />,
@@ -31,14 +41,6 @@ export const publicRoutes = [
   {
     path: '/listing',
     element: <Listing />,
-  },
-  {
-    path: '/listing/edit/:id',
-    element: <EditListing />,
-  },
-  {
-    path: '/my-listing',
-    element: <MyListing />,
   },
   {
     path: '/login',
