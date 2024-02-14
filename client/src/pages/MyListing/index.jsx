@@ -4,7 +4,6 @@ import { FullLayoutScrollable, MainLayout } from '@/layout';
 import Modal from './component/Modal';
 import NoImage from '@/assets/no-image.webp';
 import TableView from './TableView';
-import dummyData from './dummyData';
 import useAuth from '@/hooks/useAuth';
 import { getListingData } from '@/api/listingApi';
 import qs from 'qs';
