@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import _ from 'lodash';
 import qs from 'qs'; // Import qs library for query string manipulation
@@ -39,6 +39,16 @@ const Listing = () => {
   const [center, setCenter] = useState([]);
   const [zoom, setZoom] = useState(15);
   const [listing, setListing] = useState([]);
+
+  // Handle mouse over card listing
+  const [currHover, setCurrHover] = useState();
+
+  const handleMouseOver = useRef(
+    _.debounce((id) => {
+      setCurrHover(id);
+    }, 300) // Adjust the debounce delay as needed
+  ).current;
+  // ------------------------------ handle mouse over card END
 
   // (First) - Basically check 'mapBounds' query params, and set the center of map depending on the 'mapBounds' if exist
   useEffect(() => {
@@ -175,6 +185,7 @@ const Listing = () => {
                 center={center}
                 zoom={zoom}
                 listing={listing}
+                currHover={currHover}
               />
               {/* </div> */}
             </section>
@@ -184,7 +195,7 @@ const Listing = () => {
                   ? listing.map((item) => {
                       return (
                         <>
-                          <Modal>
+                          <Modal onMouseOver={() => handleMouseOver(item.id)}>
                             <div className="overflow-hidden shadow-sm">
                               {item.carouselPhotos?.length ? (
                                 <Carousel

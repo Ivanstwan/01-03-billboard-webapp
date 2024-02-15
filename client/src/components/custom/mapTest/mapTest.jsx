@@ -6,6 +6,11 @@ import './index.css';
 
 // custom icon for marker
 const iconCircle = new L.icon({ iconUrl: circleIcon, iconSize: [16, 16] });
+const iconCircleHovered = new L.icon({
+  iconUrl: circleIcon,
+  iconSize: [16, 16],
+  className: 'leaflet-marker--hovered',
+});
 
 const center = [51.505, -0.09];
 const zoom = 13;
@@ -49,6 +54,7 @@ export default function ExternalStateExample({
   zoom = 17,
   onMoveHandler, // Function to handle 'something' (e.g. maybe fetch api) on map move
   listing = [],
+  currHover = false,
 }) {
   const [map, setMap] = useState(null);
 
@@ -85,11 +91,10 @@ export default function ExternalStateExample({
         />
         {listing.length > 0 &&
           listing.map((item) => {
-            console.log(item, '[item]');
             return (
               <Marker
                 position={[item.latitude, item.longitude]}
-                icon={iconCircle}
+                icon={item.id === currHover ? iconCircleHovered : iconCircle}
               >
                 <Popup keepInView={true} autoPan={false}>
                   <div className="grid min-w-[300px] max-w-[450px] grid-rows-[177px,1fr,auto] shadow-lg">
@@ -122,7 +127,7 @@ export default function ExternalStateExample({
           })}
       </MapContainer>
     ),
-    [listing, center, zoom]
+    [listing, center, zoom, currHover]
   );
 
   return (

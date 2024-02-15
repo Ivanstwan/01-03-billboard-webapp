@@ -34,3 +34,8 @@ img.leaflet-marker-icon.leaflet-zoom-animated.leaflet-interactive:hover {
 .leaflet-popup-tip {
   box-shadow: none;
 }
+
+/* Hovered class */
+.leaflet-marker--hovered {
+  filter: grayscale(0) hue-rotate(115deg) brightness(2);
+}
