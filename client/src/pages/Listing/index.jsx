@@ -195,7 +195,11 @@ const Listing = () => {
                   ? listing.map((item) => {
                       return (
                         <>
-                          <Modal onMouseOver={() => handleMouseOver(item.id)}>
+                          <Modal
+                            // basically if handleMouseOver false, then nothing hovered
+                            onMouseOver={() => handleMouseOver(item.id)}
+                            onMouseOut={() => handleMouseOver(false)}
+                          >
                             <div className="overflow-hidden shadow-sm">
                               {item.carouselPhotos?.length ? (
                                 <Carousel

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Modal = ({ children, onMouseOver }) => {
+const Modal = ({ children, onMouseOver, onMouseOut }) => {
   const [open, setOpen] = useState(false);
 
   const clicker = (e) => {
@@ -13,6 +13,7 @@ const Modal = ({ children, onMouseOver }) => {
       className="grid w-full cursor-pointer rounded-sm shadow-md transition-all hover:shadow-xl hover:outline hover:outline-1 hover:outline-slate-500 2xl:grid-rows-[177px_1fr_auto]"
       onClick={clicker}
       onMouseOver={onMouseOver}
+      onMouseOut={onMouseOut}
     >
       {children}
       {open && (
