@@ -3,6 +3,8 @@ import {
   registerEndpoint as _registerEndpoint,
   registerUserEndpoint as _registerUserEndpoint,
   loginEndpoint as _loginEndpoint,
+  checkAccessTokenEndpoint as _checkAccessTokenEndpoint,
+  getNewAccessTokenEndpoint as _getNewAccessTokenEndpoint,
 } from './urls';
 
 // register - phase 1 - input email, and send unique email to user
@@ -44,7 +46,7 @@ export const login = async (email, password) => {
 // Check Access Token
 export const checkAuthToken = async (accessToken) => {
   try {
-    const res = await axios.get('http://localhost:8000/api/auth/checkuser', {
+    const res = await axios.get(_checkAccessTokenEndpoint, {
       withCredentials: true,
       headers: { authorization: `Bearer ${accessToken}` },
     });
@@ -56,7 +58,7 @@ export const checkAuthToken = async (accessToken) => {
 
 export const getNewAccessToken = async () => {
   try {
-    const res = await axios.get('http://localhost:8000/api/auth/token', {
+    const res = await axios.get(_getNewAccessTokenEndpoint, {
       withCredentials: true,
     });
     return res;
