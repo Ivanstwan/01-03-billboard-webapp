@@ -27,14 +27,8 @@ const InputAdsType = ({
         onValueChange={(e) => {
           handleInput(e, config);
         }}
-        defaultValue={
-          currListing.ads_type_id
-            ? // find the ads_type_id value that match _advertisementType constant
-              _advertisementType.find((idx) => {
-                return idx.value === currListing.ads_type_id && idx.value;
-              }).value
-            : ''
-        }
+        value={currListing.ads_type_id || ''}
+        defaultValue=""
       >
         <SelectTrigger
           className={`w-[180px] ${errorMessage && 'border-red-500'}`}
