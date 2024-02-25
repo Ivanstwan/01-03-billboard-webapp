@@ -5,7 +5,7 @@ const ErrorNotification = () => {
   const { errors, addError, removeError } = useErrorContext();
 
   return errors ? (
-    <div className="fixed bottom-[2rem] right-0 z-50 flex flex-col items-end gap-2 p-8 transition-all">
+    <div className="pointer-events-none fixed bottom-[2rem] right-0 z-50 flex flex-col items-end gap-2 p-8 transition-all">
       {errors.map((error) => {
         switch (error.variant) {
           case 'red':
