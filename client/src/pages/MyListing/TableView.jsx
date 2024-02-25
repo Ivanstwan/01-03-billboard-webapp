@@ -56,9 +56,9 @@ const PaginationDemo = ({ totalPages, itemPerPage, currentPage, goToPage }) => {
               />
             </PaginationItem>
             {paginationCell.length > 0 &&
-              paginationCell.map((page) => {
+              paginationCell.map((page, idx) => {
                 return page !== '...' ? (
-                  <PaginationItem>
+                  <PaginationItem key={idx}>
                     <PaginationLink
                       href="#"
                       onClick={() => goToPage(page - 1)}
@@ -98,13 +98,13 @@ const PaginationDemo = ({ totalPages, itemPerPage, currentPage, goToPage }) => {
   );
 };
 
-const TableView = ({ data }) => {
+const TableView = ({ listing }) => {
   const [page, setPage] = useState(0);
 
   const startIndex = page * itemPerPage;
   const endIndex = startIndex + itemPerPage;
   const totalPages =
-    data?.length > 0 ? Math.ceil(data.length / itemPerPage) : 0;
+    listing?.length > 0 ? Math.ceil(listing.length / itemPerPage) : 0;
 
   const goToPage = (toPage) => {
     setPage(toPage);
@@ -126,9 +126,9 @@ const TableView = ({ data }) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.length > 0 && (
+          {listing.length > 0 && (
             <>
-              {data.slice(startIndex, endIndex).map((item, idx) => (
+              {listing.slice(startIndex, endIndex).map((item, idx) => (
                 <TableRow key={idx}>
                   {tableConfig.map((config) => (
                     <TableCell key={config.value} className={config.className}>
