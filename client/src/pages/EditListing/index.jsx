@@ -25,6 +25,7 @@ import {
   latitudeRegex as _latitudeRegex,
   longitudeRegex as _longitudeRegex,
 } from '@/constant/regex';
+import DiffViewer from 'react-diff-viewer-continued';
 
 const getTitleFromValue = (value) => {
   const inputItem = inputConfig.find((item) => item.value === value);
@@ -116,6 +117,33 @@ const NormalInput = ({
   );
 };
 
+const newStyles = {
+  variables: {
+    dark: {
+      addedBackground: '#f1f5f9',
+      addedColor: 'black',
+      removedBackground: '#f1f5f9',
+      removedColor: 'black',
+      wordAddedBackground: '#86d194',
+      wordRemovedBackground: '#c77d85',
+      emptyLineBackground: '#f1f5f9',
+    },
+  },
+};
+
+const StringDiffViewer = ({ oldString, newString }) => {
+  return (
+    <DiffViewer
+      oldValue={oldString}
+      newValue={newString}
+      splitView={true}
+      hideLineNumbers={true}
+      useDarkTheme={true}
+      styles={newStyles}
+    />
+  );
+};
+
 const EditListing = () => {
   const { auth, initAuth } = useAuth();
   const { errors, addError, removeError } = useErrorContext();
@@ -128,6 +156,8 @@ const EditListing = () => {
   const [oldListing, setOldListing] = useState('');
   // New listing data
   const [currListing, setCurrListing] = useState('');
+  // Loading when submit
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const checkIfUserAllowed = async () => {
@@ -168,9 +198,7 @@ const EditListing = () => {
 
     // iterating the key property in currListing
     for (const field in currListing) {
-      console.log({ field, currListing }, '[field]');
       if (inputValidationRules.hasOwnProperty(field)) {
-        console.log(field, '[field 2]');
         const inputValue = currListing[field];
         const rules = inputValidationRules[field];
 
@@ -179,19 +207,16 @@ const EditListing = () => {
           rules?.required &&
           (inputValue === undefined || inputValue === '' || inputValue === null)
         ) {
-          console.log({ field, rules: rules?.errorMessage }, 'ERROR required');
           error = {
             ...error,
             [field]: rules?.errorMessage || 'Input Required / False Format.',
           };
-          console.log(error, '[erropr]');
           isInputValid = false; // Validation failed
         }
 
         // Check against regex pattern
         if (inputValue) {
           if (rules?.pattern && !rules.pattern.test(inputValue)) {
-            console.log(field, 'ERROR regex');
             error = {
               ...error,
               [field]: rules?.errorMessage || 'Input Required / Invalid.',
@@ -225,6 +250,35 @@ const EditListing = () => {
       ...inputError,
       [config.value]: '',
     });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!loading) {
+      setLoading(!loading);
+
+      // Post Data to api
+      const editListing = async () => {
+        console.log('editlisting', currListing);
+        try {
+          // const result = await addListing(locationData);
+          // if (result?.success) {
+          //   addError({
+          //     title: 'Success!',
+          //     text: 'Adding listing successful.',
+          //     variant: 'green',
+          //   });
+          //   return navigate('/listing');
+          // }
+          // setListing(result);
+        } catch (error) {
+          // setError(error);
+        } finally {
+          // setIsLoading(false);
+        }
+      };
+      editListing();
+    }
   };
 
   useEffect(() => {
@@ -300,29 +354,32 @@ const EditListing = () => {
               <AlertDialogTitle>Please Recheck Your Input</AlertDialogTitle>
               {Object.keys(currListing).map((item, idx) => {
                 return currListing[item] !== oldListing[item] ? (
-                  <p>{getTitleFromValue(item)} : no same</p>
+                  <>
+                    <p>{getTitleFromValue(item)} Changes</p>
+                    <StringDiffViewer
+                      oldString={
+                        oldListing[item] === null ||
+                        oldListing[item] === undefined
+                          ? ''
+                          : String(oldListing[item])
+                      }
+                      newString={
+                        currListing[item] === null ||
+                        currListing[item] === undefined
+                          ? ''
+                          : String(currListing[item])
+                      }
+                    />
+                  </>
                 ) : (
-                  <p>{getTitleFromValue(item)} : same</p>
+                  <></>
                 );
-                // return (
-                // <AlertDialogDescription key={item}>
-                //   <h2>{item}</h2>
-                //   <p>
-                //     {currListing[item] === undefined ||
-                //     currListing[item] === ''
-                //       ? '[empty]'
-                //       : currListing[item]}
-                //   </p>
-                // </AlertDialogDescription>
-                // );
               })}
             </AlertDialogHeader>
             <AlertDialogFooter>
-              {/* {!loading && <AlertDialogCancel>Cancel</AlertDialogCancel>} */}
-              <AlertDialogAction
-              // onClick={handleSubmit}
-              >
-                {/* {loading ? 'Loading...' : 'Continue'} */}
+              {!loading && <AlertDialogCancel>Cancel</AlertDialogCancel>}
+              <AlertDialogAction onClick={handleSubmit}>
+                {loading ? 'Loading...' : 'Continue'}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
