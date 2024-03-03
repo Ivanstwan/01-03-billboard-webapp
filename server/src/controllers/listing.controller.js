@@ -132,9 +132,54 @@ const insertDataIntoDatabase = async (name, latitude, longitude) => {
   }
 };
 
+// edit listing
+const editListing = async (req, res) => {
+  const { user_id } = req.decoded;
+  const {
+    id: listing_id,
+    ads_name,
+    location,
+    ads_type_id,
+    latitude,
+    longitude,
+    size_height,
+    size_length,
+  } = req.body;
+  try {
+    const query =
+      'UPDATE advertisement SET ads_name=?, location=?, ads_type_id=?, latitude=?, longitude=?, size_height=?, size_length=? WHERE user_id=? AND id=?;';
+    const values = [
+      ads_name,
+      location,
+      ads_type_id,
+      latitude,
+      longitude,
+      size_height,
+      size_length,
+      user_id,
+      listing_id,
+    ];
+
+    const [rows, fields] = await pool.query(query, values);
+
+    if (rows.affectedRows === 1) {
+      // If one row was affected (inserted), consider it a success
+      res.status(200).json('Listing Edit Successful.');
+    } else {
+      // Handle other cases, e.g., no rows affected
+      res.status(400).json('Failed to edit listing.');
+    }
+    return;
+  } catch (err) {
+    console.log('Error querying data:', err);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
 export {
   addListing,
   getListingWithinArea,
   getSingleListing,
   insertDataIntoDatabase,
+  editListing,
 };

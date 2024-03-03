@@ -6,7 +6,7 @@ dotenv.config();
 // Function to generate Access Token
 const generateAccessToken = async (payload) => {
   const token = await jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: '10s',
+    expiresIn: '10m',
   });
   return token;
 };

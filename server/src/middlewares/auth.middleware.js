@@ -13,7 +13,8 @@ const authenticateToken = (req, res, next) => {
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
     if (err) return res.status(403).send('Forbidden.');
 
-    req.decoded = decoded;
+    // Adding access token back, because needed in auth provider (client side)
+    req.decoded = { ...decoded, access_token: token };
     next();
   });
 };
