@@ -3,6 +3,7 @@ import {
   allListing as _allListing,
   singleListing as _singleListing,
   addListing as _addListing,
+  editListing as _editListing,
 } from './urls';
 
 // Function accept parameter "listingData" a query (e.g userId=2&query="something")
@@ -34,18 +35,17 @@ export const addListing = async (listingData) => {
   }
 };
 
-export const editListing = async (listingData) => {
-  console.log(listingData, '[listing data]');
-  // try {
-  //   const res = await axios.post(
-  //     `${_addListing}/${listingData.id}`,
-  //     {
-  //       headers: { authorization: `Bearer ${accessToken}` },
-  //     },
-  //     listingData
-  //   );
-  //   return res.data;
-  // } catch (error) {
-  //   return error;
-  // }
+export const editListing = async (listingData, accessToken) => {
+  try {
+    const res = await axios.post(
+      `${_editListing}/${listingData.id}`,
+      listingData,
+      {
+        headers: { authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return res;
+  } catch (error) {
+    return error;
+  }
 };
