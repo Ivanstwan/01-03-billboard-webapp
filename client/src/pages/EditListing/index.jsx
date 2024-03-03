@@ -24,8 +24,11 @@ import {
 import {
   latitudeRegex as _latitudeRegex,
   longitudeRegex as _longitudeRegex,
+  sizeHeightRegex as _sizeHeightRegex,
+  sizeLengthRegex as _sizeLengthRegex,
 } from '@/constant/regex';
-import DiffViewer from 'react-diff-viewer-continued';
+import { editListing } from '@/api/listingApi';
+import StringDiffViewer from './component/StringDiffViewer';
 
 const getTitleFromValue = (value) => {
   const inputItem = inputConfig.find((item) => item.value === value);
@@ -74,11 +77,11 @@ const inputValidationRules = {
     errorMessage: 'False input format. (Also Max decimal 6)',
   },
   size_length: {
-    pattern: /^\d{0,7}$/,
+    pattern: _sizeHeightRegex,
     errorMessage: 'False input format. (Max length 7)',
   },
   size_height: {
-    pattern: /^\d{0,7}$/,
+    pattern: _sizeLengthRegex,
     errorMessage: 'False input format. (Max length 7)',
   },
 };
@@ -114,33 +117,6 @@ const NormalInput = ({
         )}
       </div>
     </div>
-  );
-};
-
-const newStyles = {
-  variables: {
-    dark: {
-      addedBackground: '#f1f5f9',
-      addedColor: 'black',
-      removedBackground: '#f1f5f9',
-      removedColor: 'black',
-      wordAddedBackground: '#86d194',
-      wordRemovedBackground: '#c77d85',
-      emptyLineBackground: '#f1f5f9',
-    },
-  },
-};
-
-const StringDiffViewer = ({ oldString, newString }) => {
-  return (
-    <DiffViewer
-      oldValue={oldString}
-      newValue={newString}
-      splitView={true}
-      hideLineNumbers={true}
-      useDarkTheme={true}
-      styles={newStyles}
-    />
   );
 };
 
@@ -258,32 +234,32 @@ const EditListing = () => {
       setLoading(!loading);
 
       // Post Data to api
-      const editListing = async () => {
-        console.log('editlisting', currListing);
+      const submitEdit = async () => {
         try {
-          // const result = await addListing(locationData);
-          // if (result?.success) {
-          //   addError({
-          //     title: 'Success!',
-          //     text: 'Adding listing successful.',
-          //     variant: 'green',
-          //   });
-          //   return navigate('/listing');
-          // }
+          const result = await editListing(currListing, auth.access_token);
+          if (result?.status === 200) {
+            addError({
+              title: 'Success!',
+              text: 'Listing Edited.',
+              variant: 'green',
+            });
+            return navigate('/my-listing');
+          }
           // setListing(result);
         } catch (error) {
           // setError(error);
+          addError({
+            title: 'Error!',
+            text: 'Listing Edit Failed.',
+            variant: 'red',
+          });
         } finally {
           // setIsLoading(false);
         }
       };
-      editListing();
+      submitEdit();
     }
   };
-
-  useEffect(() => {
-    console.log({ currListing, inputError }, '[currListing] !');
-  }, [currListing, inputError]);
 
   return (
     <MainLayout>
@@ -353,7 +329,7 @@ const EditListing = () => {
             <AlertDialogHeader>
               <AlertDialogTitle>Please Recheck Your Input</AlertDialogTitle>
               {Object.keys(currListing).map((item, idx) => {
-                return currListing[item] !== oldListing[item] ? (
+                return currListing[item] != oldListing[item] ? (
                   <>
                     <p>{getTitleFromValue(item)} Changes</p>
                     <StringDiffViewer
@@ -376,12 +352,17 @@ const EditListing = () => {
                 );
               })}
             </AlertDialogHeader>
-            <AlertDialogFooter>
-              {!loading && <AlertDialogCancel>Cancel</AlertDialogCancel>}
-              <AlertDialogAction onClick={handleSubmit}>
-                {loading ? 'Loading...' : 'Continue'}
-              </AlertDialogAction>
-            </AlertDialogFooter>
+            {/* basically to show button if, some value different */}
+            {Object.keys(currListing).some(
+              (item) => currListing[item] != oldListing[item]
+            ) && (
+              <AlertDialogFooter>
+                {!loading && <AlertDialogCancel>Cancel</AlertDialogCancel>}
+                <AlertDialogAction onClick={handleSubmit}>
+                  {loading ? 'Loading...' : 'Continue'}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            )}
           </AlertDialogContent>
         </AlertDialog>
       </div>

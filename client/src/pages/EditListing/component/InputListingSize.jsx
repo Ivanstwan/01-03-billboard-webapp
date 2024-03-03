@@ -63,6 +63,8 @@ const InputListingSize = ({
         </div>
         {!isNaN(currListing.size_height) &&
           !isNaN(currListing.size_length) &&
+          currListing.size_height !== 0 &&
+          currListing.size_length !== 0 &&
           currListing.size_height &&
           currListing.size_length && (
             <div className="min-w-96 relative h-96 w-96 border-2 border-green-100">
