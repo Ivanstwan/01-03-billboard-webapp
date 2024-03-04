@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import { MainLayout } from '@/layout';
 import useAuth from '@/hooks/useAuth';
-import { getSingleListing } from '@/api/listingApi';
+import { addListing, getSingleListing } from '@/api/listingApi';
 import { useErrorContext } from '@/context/ErrorProvider';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -120,52 +120,16 @@ const NormalInput = ({
   );
 };
 
-const EditListing = () => {
+const AddListingFirst = () => {
   const { auth, initAuth } = useAuth();
   const { errors, addError, removeError } = useErrorContext();
   const [inputError, setInputError] = useState({});
   const navigate = useNavigate();
-  // Accessing the id parameter from the URL
-  const { id } = useParams();
 
-  // Old listing data
-  const [oldListing, setOldListing] = useState('');
   // New listing data
-  const [currListing, setCurrListing] = useState('');
+  const [currListing, setCurrListing] = useState({});
   // Loading when submit
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const checkIfUserAllowed = async () => {
-      try {
-        const response = await getSingleListing(id);
-
-        // If user_id and listing user_id not match then, kick out/navigate to my-listing
-        if (response[0].user_id !== auth.user_id) {
-          addError({
-            title: 'Unauthorized',
-            text: 'You are not allowed to edit listing. (❁´◡`❁)',
-            variant: 'red',
-          });
-          return navigate('/my-listing');
-        }
-
-        // If everything ok (user id match, listing exist), then fetch listing data
-        setCurrListing(response[0]);
-        setOldListing(response[0]);
-      } catch (error) {
-        // If no listing with that id
-        addError({
-          title: 'Error',
-          text: 'There are no listing with that id. (❁´◡`❁)',
-          variant: 'red',
-        });
-        return navigate('/my-listing');
-      }
-    };
-
-    checkIfUserAllowed();
-  }, []);
 
   const handleBeforeSubmit = (e) => {
     let isInputValid = true;
@@ -236,21 +200,25 @@ const EditListing = () => {
       // Post Data to api
       const submitEdit = async () => {
         try {
-          const result = await editListing(currListing, auth.access_token);
+          const result = await addListing(currListing, auth.access_token);
+          console.log(result, '[result]');
           if (result?.status === 200) {
+            const { listing_id } = result.data;
             addError({
               title: 'Success!',
-              text: 'Listing Edited.',
+              text: 'Listing Added.',
               variant: 'green',
             });
-            return navigate('/listing/edit-image/' + id);
+            return listing_id
+              ? navigate('/listing/edit-image/' + listing_id)
+              : navigate('/my-listing');
           }
           // setListing(result);
         } catch (error) {
           // setError(error);
           addError({
             title: 'Error!',
-            text: 'Listing Edit Failed.',
+            text: 'Add Listing Failed.',
             variant: 'red',
           });
         } finally {
@@ -264,7 +232,7 @@ const EditListing = () => {
   return (
     <MainLayout>
       <div className="flex flex-col gap-8 p-8">
-        <h1 className="text-4xl font-bold">Edit Listing (1/2)</h1>
+        <h1 className="text-4xl font-bold">Add New Listing (1/2)</h1>
         {/* Ads Name */}
         <NormalInput
           config={inputConfig[0]}
@@ -323,46 +291,29 @@ const EditListing = () => {
             className="ml-auto inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-primary p-9 text-xl font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
             onClick={handleBeforeSubmit}
           >
-            Submit Edit
+            Add Listing
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Please Recheck Your Input</AlertDialogTitle>
               {Object.keys(currListing).map((item, idx) => {
-                return currListing[item] != oldListing[item] ? (
-                  <>
-                    <p>{getTitleFromValue(item)} Changes</p>
-                    <StringDiffViewer
-                      oldString={
-                        oldListing[item] === null ||
-                        oldListing[item] === undefined
-                          ? ''
-                          : String(oldListing[item])
-                      }
-                      newString={
-                        currListing[item] === null ||
-                        currListing[item] === undefined
-                          ? ''
-                          : String(currListing[item])
-                      }
-                    />
-                  </>
+                return currListing[item] ? (
+                  <div className="grid grid-cols-[1fr_2fr]">
+                    <p>{getTitleFromValue(item)}</p>
+                    <p>{currListing[item]}</p>
+                  </div>
                 ) : (
                   <></>
                 );
               })}
             </AlertDialogHeader>
             {/* basically to show button if, some value different */}
-            {Object.keys(currListing).some(
-              (item) => currListing[item] != oldListing[item]
-            ) && (
-              <AlertDialogFooter>
-                {!loading && <AlertDialogCancel>Cancel</AlertDialogCancel>}
-                <AlertDialogAction onClick={handleSubmit}>
-                  {loading ? 'Loading...' : 'Continue'}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            )}
+            <AlertDialogFooter>
+              {!loading && <AlertDialogCancel>Cancel</AlertDialogCancel>}
+              <AlertDialogAction onClick={handleSubmit}>
+                {loading ? 'Loading...' : 'Continue'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
       </div>
@@ -370,4 +321,4 @@ const EditListing = () => {
   );
 };
 
-export default EditListing;
+export default AddListingFirst;

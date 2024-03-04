@@ -26,10 +26,12 @@ export const getSingleListing = async (listingId) => {
   }
 };
 
-export const addListing = async (listingData) => {
+export const addListing = async (listingData, accessToken) => {
   try {
-    const res = await axios.post(_addListing, listingData);
-    return res.data;
+    const res = await axios.post(_addListing, listingData, {
+      headers: { authorization: `Bearer ${accessToken}` },
+    });
+    return res;
   } catch (error) {
     return error;
   }

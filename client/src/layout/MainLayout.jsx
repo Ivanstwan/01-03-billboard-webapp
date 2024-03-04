@@ -72,6 +72,27 @@ const listingComponents = [
   },
 ];
 
+const listingPublicComponents = [
+  {
+    title: 'View Listing',
+    href: '/listing',
+    description: 'View listed advertisement in your area.',
+  },
+];
+
+const listingPrivateComponents = [
+  {
+    title: 'Add Listing',
+    href: '/listing/add',
+    description: 'For listing your advertisement product to the public.',
+  },
+  {
+    title: 'My Listing',
+    href: '/my-listing',
+    description: 'To see what advertisement you have listed.',
+  },
+];
+
 const authComponents = [
   {
     title: 'Login',
@@ -185,8 +206,26 @@ function NavigationMenuDemo() {
         <NavigationMenuItem>
           <NavigationMenuTrigger>Listing</NavigationMenuTrigger>
           <NavigationMenuContent>
+            <p className="p-6 pb-0 font-semibold text-slate-500">
+              Public Access
+            </p>
             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-              {listingComponents.map((component) => (
+              {listingPublicComponents.map((component) => (
+                <ListItem
+                  key={component.title}
+                  title={component.title}
+                  href={component.href}
+                >
+                  {component.description}
+                </ListItem>
+              ))}
+            </ul>
+            <hr />
+            <p className="p-6 pb-0 font-semibold text-slate-500">
+              Private Access
+            </p>
+            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+              {listingPrivateComponents.map((component) => (
                 <ListItem
                   key={component.title}
                   title={component.title}

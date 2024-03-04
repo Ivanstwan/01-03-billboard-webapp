@@ -9,6 +9,8 @@ import EditListing from '@/pages/EditListing';
 import MyListing from '@/pages/MyListing';
 import Register from '@/pages/Register';
 import RegisterPhase2 from '@/pages/RegisterPhase2';
+import AddListingFirst from '@/pages/AddListingFirst';
+import EditListingImage from '@/pages/EditListingImage';
 
 const NotFound = lazy(() => import('@/pages/NotFound'));
 
@@ -16,11 +18,15 @@ export const privateRoutes = [
   // Listing
   {
     path: '/listing/add',
-    element: <AddListing />,
+    element: <AddListingFirst />,
   },
   {
     path: '/listing/edit/:id',
     element: <EditListing />,
+  },
+  {
+    path: '/listing/edit-image/:id',
+    element: <EditListingImage />,
   },
   {
     path: '/my-listing',
