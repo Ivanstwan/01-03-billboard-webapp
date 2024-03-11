@@ -8,6 +8,7 @@ import { privateRoutes, publicRoutes } from '@/routers';
 import { AuthProvider } from '@/context/AuthProvider';
 import { ErrorProvider } from '@/context/ErrorProvider';
 import ErrorNotification from '@/components/custom/error/errorNotification';
+import ScrollToTop from '@/components/custom/scrollTo/scrollToTop';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -17,6 +18,8 @@ function App() {
       <ErrorProvider>
         <AuthProvider>
           <ErrorNotification />
+          {/* redirect top every changing page */}
+          <ScrollToTop />
           <Routes>
             {/* private routes */}
             <Route element={<PrivateRoute />}>

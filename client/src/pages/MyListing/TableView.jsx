@@ -20,19 +20,44 @@ import {
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui';
 import usePaginationCell from '@/hooks/pagination/usePaginationCell';
+import useScreenWidth from '@/hooks/pagination/useScreenWidth';
 
 const itemPerPage = 10;
 
 const tableConfig = [
   // { value: 'id', title: 'ID', className: 'font-medium' },
-  { value: 'ads_name', title: 'Advertisement Title', className: 'font-medium' },
-  { value: 'location', title: 'Location', className: 'font-medium' },
-  { value: 'size_length', title: 'Length (cm)' },
-  { value: 'size_height', title: 'Height (cm)' },
-  { value: 'latitude', title: 'Latitude' },
-  { value: 'longitude', title: 'Longitude' },
-  { value: 'ads_status_id', title: 'Visibility Status' },
-  { value: 'ads_type_id', title: 'Ads Type' },
+  {
+    value: 'ads_name',
+    title: 'Advertisement Title',
+    className: 'font-medium max-w-[250px] min-w-[120px] w-[15%]',
+    mobileClassName: 'font-medium w-[20%]',
+  },
+  {
+    value: 'location',
+    title: 'Location',
+    className: 'font-medium max-w-[250px] min-w-[120px] w-[15%]',
+    mobileClassName: 'font-medium w-[20%]',
+  },
+  {
+    value: 'size_length',
+    title: 'Length (cm)',
+    className: 'w-[6%]',
+  },
+  { value: 'size_height', title: 'Height (cm)', className: 'w-[6%]' },
+  { value: 'latitude', title: 'Latitude', className: 'w-[8%]' },
+  { value: 'longitude', title: 'Longitude', className: 'w-[8%]' },
+  {
+    value: 'ads_status_id',
+    title: 'Visibility Status',
+    className: 'w-[8%]',
+    mobileClassName: 'font-medium w-[15%]',
+  },
+  {
+    value: 'ads_type_id',
+    title: 'Ads Type',
+    className: 'w-[8%]',
+    mobileClassName: 'font-medium w-[15%]',
+  },
 ];
 
 const PaginationDemo = ({ totalPages, itemPerPage, currentPage, goToPage }) => {
@@ -99,6 +124,7 @@ const PaginationDemo = ({ totalPages, itemPerPage, currentPage, goToPage }) => {
 };
 
 const TableView = ({ listing }) => {
+  const screenWidth = useScreenWidth();
   const [page, setPage] = useState(0);
 
   const startIndex = page * itemPerPage;
@@ -112,39 +138,102 @@ const TableView = ({ listing }) => {
 
   return (
     <>
-      <Table>
+      <Table className="w-full table-fixed">
         <TableCaption>A list of your advertisement listing.</TableCaption>
         <TableHeader>
           <TableRow>
-            {tableConfig.map((key) => (
-              <TableHead className={key.className} key={key.title}>
-                {key.title}
-              </TableHead>
-            ))}
-            <TableHead className="w-20 pl-4">Action</TableHead>
-            <TableHead></TableHead>
+            {screenWidth >= 1024 && (
+              <>
+                {tableConfig.map((key) => (
+                  <TableHead className={key.className} key={key.title}>
+                    {key.title}
+                  </TableHead>
+                ))}
+                <TableHead className="w-20 pl-4">Action</TableHead>
+                <TableHead></TableHead>
+                <TableHead></TableHead>
+              </>
+            )}
+            {screenWidth < 1024 && (
+              <>
+                {[...tableConfig.slice(0, 2), ...tableConfig.slice(-2)].map(
+                  (key) => (
+                    <TableHead className={key.mobileClassName} key={key.title}>
+                      {key.title}
+                    </TableHead>
+                  )
+                )}
+                <TableHead className="w-20 pl-4">Action</TableHead>
+              </>
+            )}
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="w-full">
           {listing.length > 0 && (
             <>
               {listing.slice(startIndex, endIndex).map((item, idx) => (
-                <TableRow key={idx}>
-                  {tableConfig.map((config) => (
-                    <TableCell key={config.value} className={config.className}>
-                      {item[config.value] ?? '-'}
-                    </TableCell>
-                  ))}
-                  <TableCell>
-                    <Link to={`/listing/edit/${item.id}`}>
-                      <Button variant="outline">Edit</Button>
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    <Link to={`/listing/edit/${item.id}`}>
-                      <Button variant="destructive">Remove</Button>
-                    </Link>
-                  </TableCell>
+                <TableRow key={idx} className="w-full">
+                  {screenWidth >= 1024 && (
+                    <>
+                      {tableConfig.map((config) => (
+                        <TableCell
+                          key={config.value}
+                          className={`${config.className} overflow-hidden break-words`}
+                        >
+                          {/* incase text takes too many row */}
+                          <div className="min-w-[100px]">
+                            {item[config.value] ?? '-'}
+                          </div>
+                        </TableCell>
+                      ))}
+                      <TableCell className="w-[8%]">
+                        <Link to={`/listing/edit/${item.id}`}>
+                          <Button variant="outline">Edit</Button>
+                        </Link>
+                      </TableCell>
+                      <TableCell className="w-[8%]">
+                        <Link to={`/listing/edit-image/${item.id}`}>
+                          <Button variant="outline">Edit Image</Button>
+                        </Link>
+                      </TableCell>
+                      <TableCell className="w-[8%]">
+                        <Link to={`/listing/edit/${item.id}`}>
+                          <Button variant="destructive">Remove</Button>
+                        </Link>
+                      </TableCell>
+                    </>
+                  )}
+                  {screenWidth < 1024 && (
+                    <>
+                      {[
+                        ...tableConfig.slice(0, 2),
+                        ...tableConfig.slice(-2),
+                      ].map((config) => (
+                        <TableCell
+                          key={config.value}
+                          className={`${config.className} overflow-hidden break-words`}
+                        >
+                          {/* incase text takes too many row */}
+                          <div className="min-w-[100px]">
+                            {item[config.value] ?? '-'}
+                          </div>
+                        </TableCell>
+                      ))}
+                      <TableCell className="flex flex-col gap-2">
+                        <div className="flex gap-2">
+                          <Link to={`/listing/edit/${item.id}`}>
+                            <Button variant="outline">Edit</Button>
+                          </Link>
+                          <Link to={`/listing/edit-image/${item.id}`}>
+                            <Button variant="outline">Edit Image</Button>
+                          </Link>
+                        </div>
+                        <Link to={`/listing/edit/${item.id}`}>
+                          <Button variant="destructive">Remove</Button>
+                        </Link>
+                      </TableCell>
+                    </>
+                  )}
                 </TableRow>
               ))}
             </>

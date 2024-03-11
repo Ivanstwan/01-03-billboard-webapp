@@ -22,6 +22,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import {
+  titleLocationRegex as _titleLocationRegex,
   latitudeRegex as _latitudeRegex,
   longitudeRegex as _longitudeRegex,
   sizeHeightRegex as _sizeHeightRegex,
@@ -65,8 +66,16 @@ const inputConfig = [
 ];
 
 const inputValidationRules = {
-  ads_name: { required: true, errorMessage: 'Input Required.' },
-  location: { required: true, errorMessage: 'Input Required.' },
+  ads_name: {
+    required: true,
+    errorMessage: 'Input Required. Max 255 Chars.',
+    pattern: _titleLocationRegex,
+  },
+  location: {
+    required: true,
+    errorMessage: 'Input Required. Max 255 Chars.',
+    pattern: _titleLocationRegex,
+  },
   ads_type_id: { required: true, errorMessage: 'Input Required.' },
   latitude: {
     pattern: _latitudeRegex,
@@ -325,7 +334,7 @@ const EditListing = () => {
           >
             Submit Edit
           </AlertDialogTrigger>
-          <AlertDialogContent>
+          <AlertDialogContent className="max-w-[70%]">
             <AlertDialogHeader>
               <AlertDialogTitle>Please Recheck Your Input</AlertDialogTitle>
               {Object.keys(currListing).map((item, idx) => {
