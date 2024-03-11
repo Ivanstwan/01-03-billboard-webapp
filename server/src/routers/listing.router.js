@@ -8,6 +8,7 @@ import {
   longitudeRegex as _longitudeRegex,
   sizeHeightRegex as _sizeHeightRegex,
   sizeLengthRegex as _sizeLengthRegex,
+  titleLocationRegex as _titleLocationRegex,
 } from '../constant/regex.js';
 
 const router = express.Router();
@@ -31,8 +32,22 @@ router.route('/add').post(
   [
     body('ads_name')
       .notEmpty()
-      .withMessage('Advertisement Name cannot be empty'),
-    body('location').notEmpty().withMessage('Location cannot be empty'),
+      .withMessage('Advertisement Name cannot be empty')
+      .custom((value) => {
+        if (value && !_titleLocationRegex.test(value)) {
+          throw new Error('Advertisement Name max 255 chars');
+        }
+        return true;
+      }),
+    body('location')
+      .notEmpty()
+      .withMessage('Location cannot be empty')
+      .custom((value) => {
+        if (value && !_titleLocationRegex.test(value)) {
+          throw new Error('Location max 255 chars');
+        }
+        return true;
+      }),
     body('latitude')
       .optional({ checkFalsy: true }) // Make it optional
       .custom((value) => {
@@ -90,8 +105,22 @@ router.route('/edit/:id').post(
     body('id').notEmpty().withMessage('Advertisement ID cannot be empty'),
     body('ads_name')
       .notEmpty()
-      .withMessage('Advertisement Name cannot be empty'),
-    body('location').notEmpty().withMessage('Location cannot be empty'),
+      .withMessage('Advertisement Name cannot be empty')
+      .custom((value) => {
+        if (value && !_titleLocationRegex.test(value)) {
+          throw new Error('Advertisement Name max 255 chars');
+        }
+        return true;
+      }),
+    body('location')
+      .notEmpty()
+      .withMessage('Location cannot be empty')
+      .custom((value) => {
+        if (value && !_titleLocationRegex.test(value)) {
+          throw new Error('Location max 255 chars');
+        }
+        return true;
+      }),
     body('latitude')
       .optional({ checkFalsy: true }) // Make it optional
       .custom((value) => {
