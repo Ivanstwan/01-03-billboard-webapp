@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 
 import { MainLayout } from '@/layout';
 import useAuth from '@/hooks/useAuth';
@@ -30,6 +30,7 @@ import {
 } from '@/constant/regex';
 import { editListing } from '@/api/listingApi';
 import StringDiffViewer from './component/StringDiffViewer';
+import { Button } from '@/components/ui';
 
 const getTitleFromValue = (value) => {
   const inputItem = inputConfig.find((item) => item.value === value);
@@ -176,6 +177,11 @@ const EditListing = () => {
     checkIfUserAllowed();
   }, []);
 
+  const filterChanges = (currListing, oldListing) =>
+    Object.keys(currListing).filter(
+      (item) => currListing[item] !== oldListing[item]
+    );
+
   const handleBeforeSubmit = (e) => {
     let isInputValid = true;
     // Holding error of current input
@@ -220,6 +226,18 @@ const EditListing = () => {
       addError({
         title: 'Uhm! Something went wrong.',
         text: 'There were empty or invalid input.',
+        variant: 'red',
+      });
+    }
+
+    // check if there are any changes to input
+    const changedItems = filterChanges(currListing, oldListing);
+
+    if (changedItems.length === 0) {
+      e.preventDefault();
+      addError({
+        title: 'Uhm! You change nothing.',
+        text: 'There were no changes at all.',
         variant: 'red',
       });
     }
@@ -273,7 +291,25 @@ const EditListing = () => {
   return (
     <MainLayout>
       <div className="flex flex-col gap-8 p-8">
-        <h1 className="text-4xl font-bold">Edit Listing (1/2)</h1>
+        <div>
+          <div className="flex justify-between">
+            <Link to={'/my-listing'}>
+              <Button variant="link">
+                <div>
+                  <span>{'<'} </span>My Listing
+                </div>
+              </Button>
+            </Link>
+            <Link to={'/listing/edit-image/' + id}>
+              <Button variant="link">
+                <div>
+                  Edit Image (2/2)<span> {'>'}</span>
+                </div>
+              </Button>
+            </Link>
+          </div>
+          <h1 className="pt-4 text-4xl font-bold">Edit Listing (1/2)</h1>
+        </div>
         {/* Ads Name */}
         <NormalInput
           config={inputConfig[0]}
@@ -336,7 +372,15 @@ const EditListing = () => {
           </AlertDialogTrigger>
           <AlertDialogContent className="max-w-[70%]">
             <AlertDialogHeader>
-              <AlertDialogTitle>Please Recheck Your Input</AlertDialogTitle>
+              <AlertDialogTitle>
+                <div className="flex justify-between">
+                  Please Recheck Your Input{' '}
+                  <span className="text-s pl-4 font-mono text-slate-300">
+                    press <span className="italic">cancel</span> or{' '}
+                    <span className="italic">esc</span> to back
+                  </span>
+                </div>
+              </AlertDialogTitle>
               {Object.keys(currListing).map((item, idx) => {
                 return currListing[item] != oldListing[item] ? (
                   <>
@@ -360,6 +404,9 @@ const EditListing = () => {
                   <></>
                 );
               })}
+              {filterChanges(currListing, oldListing).length === 0 && (
+                <p className="pt-4 text-slate-400">No changes found</p>
+              )}
             </AlertDialogHeader>
             {/* basically to show button if, some value different */}
             {Object.keys(currListing).some(

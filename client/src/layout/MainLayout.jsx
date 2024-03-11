@@ -82,14 +82,14 @@ const listingPublicComponents = [
 
 const listingPrivateComponents = [
   {
-    title: 'Add Listing',
-    href: '/listing/add',
-    description: 'For listing your advertisement product to the public.',
-  },
-  {
     title: 'My Listing',
     href: '/my-listing',
     description: 'To see what advertisement you have listed.',
+  },
+  {
+    title: 'Add Listing',
+    href: '/listing/add',
+    description: 'For listing your advertisement product to the public.',
   },
 ];
 
