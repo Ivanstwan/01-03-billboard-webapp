@@ -303,12 +303,14 @@ const EditListing = () => {
             <Link to={'/listing/edit-image/' + id}>
               <Button variant="link">
                 <div>
-                  Edit Image (2/2)<span> {'>'}</span>
+                  Listing Media (2/2)<span> {'>'}</span>
                 </div>
               </Button>
             </Link>
           </div>
-          <h1 className="pt-4 text-4xl font-bold">Edit Listing (1/2)</h1>
+          <h1 className="pt-4 text-center text-4xl font-bold">
+            Listing Data (1/2)
+          </h1>
         </div>
         {/* Ads Name */}
         <NormalInput
