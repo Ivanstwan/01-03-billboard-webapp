@@ -3,6 +3,7 @@ import {
   allListing as _allListing,
   singleListing as _singleListing,
   addListing as _addListing,
+  addListingImage as _addListingImage,
   editListing as _editListing,
 } from './urls';
 
@@ -37,15 +38,22 @@ export const addListing = async (listingData, accessToken) => {
   }
 };
 
+export const addListingImage = async (formData, accessToken) => {
+  try {
+    const res = await axios.post(_addListingImage, formData, {
+      headers: { authorization: `Bearer ${accessToken}` },
+    });
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+
 export const editListing = async (listingData, accessToken) => {
   try {
-    const res = await axios.post(
-      `${_editListing}/${listingData.id}`,
-      listingData,
-      {
-        headers: { authorization: `Bearer ${accessToken}` },
-      }
-    );
+    const res = await axios.post(`${_editListing}`, listingData, {
+      headers: { authorization: `Bearer ${accessToken}` },
+    });
     return res;
   } catch (error) {
     return error;

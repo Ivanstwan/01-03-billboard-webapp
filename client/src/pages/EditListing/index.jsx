@@ -366,11 +366,8 @@ const EditListing = () => {
 
         {/* Submit Button & Preview */}
         <AlertDialog>
-          <AlertDialogTrigger
-            className="ml-auto inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-primary p-9 text-xl font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-            onClick={handleBeforeSubmit}
-          >
-            Submit Edit
+          <AlertDialogTrigger asChild onClick={handleBeforeSubmit}>
+            <Button className="ml-auto flex">Submit Edit</Button>
           </AlertDialogTrigger>
           <AlertDialogContent className="max-w-[70%]">
             <AlertDialogHeader>
