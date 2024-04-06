@@ -1,4 +1,7 @@
+import fs from 'fs';
+
 import pool from '../config/db.config.js';
+import cloudinary from '../helper/cloudinaryConfig.js';
 
 // add listing
 const addListing = async (req, res) => {
@@ -42,7 +45,146 @@ const addListing = async (req, res) => {
     }
     return;
   } catch (err) {
-    console.log('Error querying data:', err);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+// add listing
+const addListingImage = async (req, res) => {
+  const { user_id } = req.decoded;
+
+  try {
+    const { files } = req;
+    const { listingId } = req.body;
+
+    // remove file image from local /src/uploads
+    const removeLocalFiles = () => {
+      files.forEach((file) => {
+        fs.unlinkSync(file.path);
+      });
+    };
+
+    // validation - if files empty
+    if (!files || files.length === 0) {
+      return res.status(400).json({ success: false, message: 'Files empty.' });
+    }
+
+    // validation - if files empty
+    if (!listingId) {
+      removeLocalFiles();
+      return res
+        .status(400)
+        .json({ success: false, message: 'Listing ID empty.' });
+    }
+
+    // validation - check if user_id can edit listing
+    const queryCheckListing =
+      'SELECT * FROM `advertisement` WHERE user_id = ? AND id = ?';
+    const valueCheckListing = [user_id, listingId];
+
+    const [rows, fields] = await pool.query(
+      queryCheckListing,
+      valueCheckListing
+    );
+
+    // listing with user_id and listing_id not found
+    if (rows.length === 0) {
+      removeLocalFiles();
+      return res
+        .status(404)
+        .json({ success: false, message: 'No Listing found.' });
+    }
+
+    // Upload files to Cloudinary
+    const cloudinaryUploadPromises = files.map(
+      (file) =>
+        new Promise((resolve, reject) => {
+          cloudinary.uploader.upload(
+            file.path,
+            {
+              folder: 'advertisement', // Optional: Set a folder name for your uploads
+              // Allowed file formats
+              // Format file filter in multer instead
+              // i want to use the allowed_formats, but somehow
+              // cloudinary always reject file, e.g. jpg rejected "err msg webp rejected", so weird
+              // allowed_formats: ['jpg', 'jpeg'],
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+        })
+    );
+
+    const cloudinaryUploadResponses = await Promise.allSettled(
+      cloudinaryUploadPromises
+    );
+
+    // Insert data into MySQL database
+    const insertPromises = cloudinaryUploadResponses.map(
+      (uploadResponse) =>
+        new Promise((resolve, reject) => {
+          if (uploadResponse.status === 'fulfilled') {
+            try {
+              const query = 'INSERT INTO image (ads_id, url) VALUES (?, ?);';
+              const valuesImage = [listingId, uploadResponse.value.secure_url];
+
+              // Execute the query using queryAsync
+              const results = pool.query(query, valuesImage);
+
+              resolve(results);
+            } catch (error) {
+              // If an error occurs, reject the promise
+              console.error('Error inserting image into database:', error);
+              reject(error);
+            }
+          } else {
+            reject(uploadResponse.reason); // Reject promise with error reason
+          }
+        })
+    );
+
+    const insertDatabaseResponse = await Promise.allSettled(insertPromises);
+
+    // Handle insertDatabaseResponse here
+    const successfulInserts = insertDatabaseResponse.filter(
+      (response) => response.status === 'fulfilled'
+    );
+    const failedInserts = insertDatabaseResponse.filter(
+      (response) => response.status === 'rejected'
+    );
+
+    // Check if there are any successful inserts with affected rows
+    const hasAffectedRows = successfulInserts.some(
+      (response) => response.value[0]?.affectedRows > 0
+    );
+
+    let responseJson = {};
+
+    // Response based on promises success/fail
+    if (successfulInserts.length > 0) {
+      if (failedInserts.length > 0 || !hasAffectedRows) {
+        // Half successful upload
+        responseJson = {
+          message: 'Some image failed to upload.',
+          success: false,
+        };
+      } else {
+        // Fully successful upload
+        responseJson = { message: 'Image upload success.', success: true };
+      }
+    } else {
+      // Failed upload
+      responseJson = { message: 'Image upload failed.', success: false };
+    }
+
+    // Send JSON response to the client
+    res.status(200).json(responseJson);
+
+    // Delete uploaded files from local storage
+    removeLocalFiles();
+  } catch (err) {
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
@@ -121,6 +263,7 @@ const insertDataIntoDatabase = async (name, latitude, longitude) => {
   try {
     const query =
       'INSERT INTO your_table_name (name, latitude, longitude) VALUES (?, ?, ?);';
+
     const values = [name, latitude, longitude];
 
     const [result] = await pool.promises.query(query, values);
@@ -181,4 +324,5 @@ export {
   getSingleListing,
   insertDataIntoDatabase,
   editListing,
+  addListingImage,
 };

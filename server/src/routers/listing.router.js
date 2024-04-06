@@ -10,6 +10,7 @@ import {
   sizeLengthRegex as _sizeLengthRegex,
   titleLocationRegex as _titleLocationRegex,
 } from '../constant/regex.js';
+import { uploadImage } from '../helper/multerConfig.js';
 
 const router = express.Router();
 
@@ -27,8 +28,16 @@ router
     }
   );
 
+router.route('/:id').get(listingController.getSingleListing);
+
+// ⚠️⚠️⚠️ Please Note ⚠️⚠️⚠️
+// All routes below this line are protected by the 'authenticateToken' middleware.
+// Ensure that authentication is required for these routes.
+router.use(authenticateToken);
+// ROUTE BELOW THIS LINE USE 'authenticateToken'
+
+// add listing
 router.route('/add').post(
-  authenticateToken,
   [
     body('ads_name')
       .notEmpty()
@@ -98,9 +107,8 @@ router.route('/add').post(
   }
 );
 
-router.route('/:id').get(listingController.getSingleListing);
-router.route('/edit/:id').post(
-  authenticateToken,
+// edit listing - have very simillar logic with 'add listing'
+router.route('/edit/data').post(
   [
     body('id').notEmpty().withMessage('Advertisement ID cannot be empty'),
     body('ads_name')
@@ -169,5 +177,9 @@ router.route('/edit/:id').post(
     listingController.editListing(req, res);
   }
 );
+
+router
+  .route('/add/image')
+  .post(uploadImage.array('files[]'), listingController.addListingImage);
 
 export default router;
