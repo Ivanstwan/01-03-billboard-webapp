@@ -17,7 +17,11 @@ const imageStorage = multer.diskStorage({
 
 // Image upload file filter
 const imageFileFilter = (req, file, cb) => {
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg') {
+  if (
+    file.mimetype === 'image/jpeg' ||
+    file.mimetype === 'image/jpg' ||
+    file.mimetype === 'image/webp'
+  ) {
     cb(null, true);
   } else {
     // Remove file if not JPEG or JPG

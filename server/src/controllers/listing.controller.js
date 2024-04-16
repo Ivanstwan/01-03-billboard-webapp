@@ -248,11 +248,25 @@ const getSingleListing = async (req, res) => {
   const listingId = req.params.id;
 
   try {
-    const query = 'SELECT * FROM `advertisement` WHERE id = ?;';
+    const query =
+      'SELECT a.*, image.url FROM `advertisement` as a LEFT JOIN image ON a.id = image.ads_id WHERE a.id = ?;';
     const values = [listingId];
     const [rows, fields] = await pool.query(query, values);
 
-    res.json(rows);
+    // If no rows found, return empty response
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Listing not found' });
+    }
+
+    // Take all imageurl to an array
+    const urlArr = rows.map((data) => data.url);
+
+    // Take the first object (because all object have same value, except url)
+    const transformedRows = rows[0];
+    // Add the imageurl arr to the rows
+    transformedRows.url = urlArr[0] ? urlArr : [];
+
+    res.json([transformedRows]);
   } catch (err) {
     console.log('Error querying data:', err);
     res.status(500).send('Internal Server Error');
