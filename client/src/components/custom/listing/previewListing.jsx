@@ -98,9 +98,11 @@ const PreviewListing = ({ listing }) => {
     <div className="p-8">
       <ImageDisplayConditional url={url} />
       <div className="flex flex-row gap-4 pt-4">
-        <div className="flex-1 basis-full">
-          {ads_name && <p className="text-3xl font-bold">{ads_name}</p>}
-          {location && <p className="text-xl">{location}</p>}
+        <div className="flex-1 basis-full overflow-hidden">
+          {ads_name && (
+            <p className="break-words text-3xl font-bold">{ads_name}</p>
+          )}
+          {location && <p className="break-words text-xl">{location}</p>}
           <div className="grid grid-cols-3 grid-rows-2 gap-2 pt-4">
             {ads_type_id && (
               <div className="flex gap-1 bg-zinc-100 px-3 py-2">

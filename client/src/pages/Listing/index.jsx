@@ -216,11 +216,13 @@ const Listing = () => {
                               )}
                             </div>
                             <div className="p-2">
-                              <p className="text-lg font-semibold">
+                              <p className="line-clamp-2 overflow-hidden text-ellipsis text-lg font-semibold">
                                 {item.ads_name}
                               </p>
-                              <p className="text-sm">{item.location}</p>
-                              <p className="text-xs text-slate-400">
+                              <p className="line-clamp-1 overflow-hidden text-ellipsis text-sm">
+                                {item.location}
+                              </p>
+                              <p className="overflow-hidden text-ellipsis text-xs text-slate-400">
                                 {item.user_id}
                               </p>
                             </div>
