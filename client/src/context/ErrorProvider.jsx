@@ -31,17 +31,25 @@ export const ErrorProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    // Set a timeout to remove all errors after 10 seconds of inactivity
-    const timeoutId = setTimeout(() => {
-      setErrors([]);
-    }, 9000);
+    if (errors.length > 0) {
+      // Set a timeout to remove all errors after 10 seconds of inactivity
+      const timeoutId = setTimeout(() => {
+        setErrors([]);
+      }, 9000);
 
-    // Cleanup function to clear the timeout if there are state changes
-    return () => clearTimeout(timeoutId);
+      // Cleanup function to clear the timeout if there are state changes
+      return () => clearTimeout(timeoutId);
+    }
   }, [errors]);
 
   return (
-    <ErrorContext.Provider value={{ errors, addError, removeError }}>
+    <ErrorContext.Provider
+      value={{
+        errors,
+        addError,
+        removeError,
+      }}
+    >
       {children}
     </ErrorContext.Provider>
   );
