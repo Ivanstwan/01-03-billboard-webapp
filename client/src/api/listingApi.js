@@ -5,6 +5,7 @@ import {
   addListing as _addListing,
   addListingImage as _addListingImage,
   editListing as _editListing,
+  deleteListingImage as _deleteListingImage,
 } from './urls';
 
 // Function accept parameter "listingData" a query (e.g userId=2&query="something")
@@ -54,6 +55,21 @@ export const editListing = async (listingData, accessToken) => {
     const res = await axios.post(`${_editListing}`, listingData, {
       headers: { authorization: `Bearer ${accessToken}` },
     });
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const deleteListingImage = async (imageUrl, accessToken) => {
+  try {
+    const res = await axios.post(
+      `${_deleteListingImage}`,
+      { url: imageUrl },
+      {
+        headers: { authorization: `Bearer ${accessToken}` },
+      }
+    );
     return res;
   } catch (error) {
     return error;

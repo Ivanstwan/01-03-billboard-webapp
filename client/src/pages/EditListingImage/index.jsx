@@ -2,9 +2,23 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import Dropzone, { useDropzone } from 'react-dropzone';
 
-import { Button } from '@/components/ui';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { MainLayout } from '@/layout';
-import { addListingImage, getSingleListing } from '@/api/listingApi';
+import {
+  addListingImage,
+  deleteListingImage,
+  getSingleListing,
+} from '@/api/listingApi';
 import { useErrorContext } from '@/context/ErrorProvider';
 import useAuth from '@/hooks/useAuth';
 import {
@@ -78,6 +92,37 @@ const EditListingImage = () => {
     setFiles(files.filter((file) => file !== fileToDelete));
   };
 
+  const handleDeleteListingImage = async (url) => {
+    try {
+      // loading start
+      setLoading(true);
+
+      const response = await deleteListingImage(url, auth.access_token);
+      console.log(response, '[response]');
+
+      if (response?.response?.status === 400) {
+        // loading stop
+        setLoading(false);
+        return;
+      }
+
+      const refetchListing = await getSingleListing(id);
+      setCurrListing(refetchListing[0]);
+
+      // loading stop
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      addError({
+        title: 'Error',
+        text: 'Failed to delete listing image. (❁´◡`❁)',
+        variant: 'red',
+      });
+    }
+
+    const refetchListing = await getSingleListing(id);
+  };
+
   // handle submit, basically add the file to formData and attach it in body
   const handleSubmit = async () => {
     try {
@@ -126,10 +171,19 @@ const EditListingImage = () => {
       // Clear files after successful upload
       setFiles([]);
 
+      const refetchListing = await getSingleListing(id);
+      setCurrListing(refetchListing[0]);
+
       // loading stop
       setLoading(false);
     } catch (error) {
-      console.error('Error uploading files:', error);
+      // loading stop
+      setLoading(false);
+      addError({
+        title: 'Failed.',
+        text: response?.data?.message || 'Image failed to upload.',
+        variant: 'red',
+      });
     }
   };
 
@@ -168,11 +222,18 @@ const EditListingImage = () => {
     <MainLayout>
       <div className="flex flex-col gap-8 p-8">
         <div>
-          <div className="flex justify-between">
+          <div className="flex flex-col">
             <Link to={'/listing/edit/' + id}>
               <Button variant="link">
                 <div>
                   <span>{'<'} </span>Listing Data (1/2)
+                </div>
+              </Button>
+            </Link>
+            <Link to={'/my-listing'}>
+              <Button variant="link">
+                <div>
+                  <span>{'<'} </span>My Listing
                 </div>
               </Button>
             </Link>
@@ -191,7 +252,68 @@ const EditListingImage = () => {
           <h2 className="pt-12 text-3xl font-semibold">Photos</h2>
           <div>
             <h3 className="pt-4 text-2xl font-semibold">Current Photos</h3>
-            <p className="pt-2">Currently you have no photos.</p>
+            <div className="grid grid-cols-5 grid-rows-1 gap-4 gap-y-8 py-8 pt-4">
+              {currListing?.url &&
+                currListing.url.map((fileUrl, index) => (
+                  <div key={index} className="relative border-2 border-dashed">
+                    <img
+                      src={fileUrl}
+                      alt="Preview"
+                      className="h-full max-h-[200px] min-h-[200px] w-full border-2 border-dashed object-cover"
+                    />
+                    <button
+                      onClick={() => handleDeleteListingImage(fileUrl)}
+                      disabled={loading}
+                      className="absolute right-0 top-0 bg-red-800 bg-opacity-50 px-2 py-1 text-white transition-all hover:bg-opacity-75"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              {currListing?.url &&
+                currListing.url.map((fileUrl, index) => (
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <div
+                        key={index}
+                        className="relative cursor-pointer border-2 border-dashed"
+                      >
+                        <img
+                          src={fileUrl}
+                          alt="Preview"
+                          className="h-full max-h-[200px] min-h-[200px] w-full border-2 border-dashed object-cover"
+                        />
+                        <button className="absolute right-0 top-0 bg-red-800 bg-opacity-50 px-2 py-1 text-white transition-all hover:bg-opacity-75">
+                          Remove
+                        </button>
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Remove Image</DialogTitle>
+                        <DialogDescription>
+                          Click remove if you're sure.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <img
+                        src={fileUrl}
+                        alt="Preview"
+                        className="h-full max-h-[200px] min-h-[200px] w-full border-2 border-dashed object-cover"
+                      />
+                      <DialogFooter>
+                        <DialogClose asChild>
+                          <Button
+                            type="button"
+                            onClick={() => handleDeleteListingImage(fileUrl)}
+                          >
+                            Remove
+                          </Button>
+                        </DialogClose>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                ))}
+            </div>
           </div>
           <div>
             <h3 className="pb-4 pt-8 text-2xl font-semibold">Add New Photos</h3>
@@ -228,6 +350,7 @@ const EditListingImage = () => {
                   </p>
                   <button
                     onClick={() => handleDelete(file)}
+                    disabled={loading}
                     className="absolute right-0 top-0 bg-red-800 bg-opacity-50 px-2 py-1 text-white transition-all hover:bg-opacity-75"
                   >
                     Remove
