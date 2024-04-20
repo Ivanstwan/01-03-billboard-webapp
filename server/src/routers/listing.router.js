@@ -178,8 +178,25 @@ router.route('/edit/data').post(
   }
 );
 
+// add image - multiple files uploader
 router
   .route('/add/image')
   .post(uploadImage.array('files[]'), listingController.addListingImage);
+
+// delete listing image - single delete
+router
+  .route('/delete/image')
+  .post(
+    body('url').notEmpty().withMessage('Image URL cannot be empty'),
+    (req, res) => {
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      listingController.deleteListingImage(req, res);
+    }
+  );
 
 export default router;

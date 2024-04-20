@@ -332,6 +332,51 @@ const editListing = async (req, res) => {
   }
 };
 
+// delete listing image
+const deleteListingImage = async (req, res) => {
+  const { user_id } = req.decoded;
+  const { url } = req.body;
+  try {
+    // validation - check if user_id can edit listing
+    const queryGetImageId =
+      'SELECT image.id FROM advertisement as a LEFT JOIN image ON a.id = image.ads_id WHERE a.user_id=? AND image.url=?;';
+    const valueCheckListing = [user_id, url];
+
+    const [rows, fields] = await pool.query(queryGetImageId, valueCheckListing);
+
+    // listing image with user_id and image url not found
+    if (rows.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'No Image found.' });
+    }
+
+    // image id to be deleted
+    const { id } = rows[0];
+
+    const query = 'DELETE FROM image WHERE id=?;';
+    const values = [id];
+
+    const response = await pool.query(query, values);
+
+    if (response[0].affectedRows === 1) {
+      // If one row was affected (inserted), consider it a success
+      res
+        .status(200)
+        .json({ success: true, message: 'Success to remove image.' });
+    } else {
+      // Handle other cases, e.g., no rows affected
+      res
+        .status(400)
+        .json({ success: false, message: 'Failed to remove image.' });
+    }
+    return;
+  } catch (err) {
+    console.log('Error querying data:', err);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
 export {
   addListing,
   getListingWithinArea,
@@ -339,4 +384,5 @@ export {
   insertDataIntoDatabase,
   editListing,
   addListingImage,
+  deleteListingImage,
 };
