@@ -7,12 +7,10 @@ import Map from '@/components/custom/map/map';
 import Modal from '@/components/custom/modal.jsx/modal';
 import { Input } from '@/components/ui/input';
 import { FullLayoutFixed } from '@/layout';
-import data from './dummyResponseData.json';
 import Carousel from '@/components/custom/carousel/carousel';
 import DisplayMap from './component/displayMap';
 import { getListingData } from '@/api/listingApi';
 import { isMapBoundsValid } from './utils';
-import NoImage from '@/assets/no-image.webp';
 
 // Check if value is [object Object],
 // why? because if query empty (e.g. queryBound, instead of returning value, it return '[object Object])
@@ -201,25 +199,27 @@ const Listing = () => {
                             onMouseOut={() => handleMouseOver(false)}
                           >
                             <div className="overflow-hidden shadow-sm">
-                              {item.carouselPhotos?.length ? (
+                              {item?.image_urls?.length ? (
                                 <Carousel
-                                  images={item.carouselPhotos.slice(0, 5)}
+                                  images={item.image_urls.slice(0, 5)}
                                 />
                               ) : (
                                 <div className="flex h-full w-full items-center justify-center">
-                                  <img
-                                    src={NoImage}
-                                    alt="no image"
-                                    className="max-h-96 w-[70%] max-w-md rounded-lg object-contain opacity-70"
-                                  />
+                                  <div
+                                    className={
+                                      'grid h-full w-full place-items-center bg-zinc-200 text-2xl text-zinc-500 transition-all hover:brightness-95'
+                                    }
+                                  >
+                                    No Image
+                                  </div>
                                 </div>
                               )}
                             </div>
-                            <div className="p-2">
-                              <p className="line-clamp-2 overflow-hidden text-ellipsis text-lg font-semibold">
+                            <div className="overflow-hidden p-2">
+                              <p className="line-clamp-2 overflow-hidden text-ellipsis break-words text-lg font-semibold">
                                 {item.ads_name}
                               </p>
-                              <p className="line-clamp-1 overflow-hidden text-ellipsis text-sm">
+                              <p className="line-clamp-1 overflow-hidden  text-ellipsis break-words text-sm">
                                 {item.location}
                               </p>
                               <p className="overflow-hidden text-ellipsis text-xs text-slate-400">

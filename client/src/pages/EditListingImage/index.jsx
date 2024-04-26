@@ -255,23 +255,6 @@ const EditListingImage = () => {
             <div className="grid grid-cols-5 grid-rows-1 gap-4 gap-y-8 py-8 pt-4">
               {currListing?.url &&
                 currListing.url.map((fileUrl, index) => (
-                  <div key={index} className="relative border-2 border-dashed">
-                    <img
-                      src={fileUrl}
-                      alt="Preview"
-                      className="h-full max-h-[200px] min-h-[200px] w-full border-2 border-dashed object-cover"
-                    />
-                    <button
-                      onClick={() => handleDeleteListingImage(fileUrl)}
-                      disabled={loading}
-                      className="absolute right-0 top-0 bg-red-800 bg-opacity-50 px-2 py-1 text-white transition-all hover:bg-opacity-75"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                ))}
-              {currListing?.url &&
-                currListing.url.map((fileUrl, index) => (
                   <Dialog>
                     <DialogTrigger asChild>
                       <div

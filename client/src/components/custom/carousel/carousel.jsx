@@ -62,7 +62,7 @@ const Carousel = ({ images }) => {
       </div>
       <div className="flex h-full w-full items-center justify-center">
         <img
-          src={images[currentImageIndex].url}
+          src={images[currentImageIndex]}
           alt={`Image ${currentImageIndex + 1}`}
           className="max-h-96 w-full max-w-md rounded-lg object-contain shadow-lg"
         />
