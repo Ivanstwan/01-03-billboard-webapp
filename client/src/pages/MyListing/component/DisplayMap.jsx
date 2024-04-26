@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
-import Map from './Map';
+import ExternalStateExample from '@/components/custom/mapTest/mapTest';
 
-const DisplayMap = ({ center, zoom, listing }) => {
+const DisplayMap = ({ center, zoom, listing, currHover }) => {
   const [convertedCenter, setConvertedCenter] = useState([]);
   const [sortedListing, setSortedListing] = useState([]);
 
@@ -15,8 +15,15 @@ const DisplayMap = ({ center, zoom, listing }) => {
 
   return (
     <>
-      {convertedCenter.length > 0 && (
-        <Map center={convertedCenter} zoom={zoom} listing={sortedListing} />
+      {sortedListing.length > 0 && convertedCenter.length > 0 ? (
+        <ExternalStateExample
+          center={convertedCenter}
+          zoom={zoom}
+          listing={sortedListing}
+          currHover={currHover}
+        />
+      ) : (
+        <p>No Data</p>
       )}
     </>
   );

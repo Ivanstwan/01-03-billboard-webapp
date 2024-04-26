@@ -5,7 +5,6 @@ const Modal = ({ children, currListing, onMouseOver, onMouseOut }) => {
   const [open, setOpen] = useState(false);
 
   const clicker = (e) => {
-    console.log(e, '[event]');
     setOpen(!open);
   };
 

@@ -1,33 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import _ from 'lodash';
 
 import Modal from './component/Modal';
-import NoImage from '@/assets/no-image.webp';
 import DisplayMap from './component/displayMap';
+import Carousel from '@/components/custom/carousel/carousel';
 
 const item = [];
 
 const MapView = ({ listing }) => {
   const [center, setCenter] = useState([]);
+  // Handle mouse over card listing
+  const [currHover, setCurrHover] = useState();
+
+  const handleMouseOver = useRef(
+    _.debounce((id) => {
+      setCurrHover(id);
+    }, 300) // Adjust the debounce delay as needed
+  ).current;
 
   const findCenter = () => {
-    console.log('find center', listing);
     const firstObjWithCoordinate = listing.find(
       (obj) => obj.latitude !== null && obj.longitude !== null
     ) || { latitude: -6.903732, longitude: 107.618933 };
-
-    console.log(firstObjWithCoordinate, '[firstObjWithCoordinate]');
 
     setCenter([
       parseFloat(firstObjWithCoordinate.latitude),
       parseFloat(firstObjWithCoordinate.longitude),
     ]);
-    console.log(
-      [
-        parseFloat(firstObjWithCoordinate.latitude),
-        parseFloat(firstObjWithCoordinate.longitude),
-      ],
-      '[center]'
-    );
   };
 
   useEffect(() => {
@@ -37,15 +36,12 @@ const MapView = ({ listing }) => {
   return (
     <div className="grid h-full min-h-full md:grid-cols-[1fr_375px] 2xl:grid-cols-[1fr_750px]">
       <section className="z-10 hidden md:block">
-        {/* <div className="relative z-10"> */}
-        {/* <Map center={[-6.903732, 107.618933]} zoom={17} /> */}
         <DisplayMap
-          // getMapData={getMapData}
           center={center}
           zoom="17"
           listing={listing}
+          currHover={currHover}
         />
-        {/* </div> */}
       </section>
       <section className="overflow-y-scroll pt-6 shadow-2xl">
         <div className="grid grid-cols-2 gap-3 px-4">
@@ -53,17 +49,23 @@ const MapView = ({ listing }) => {
             ? listing.map((item) => {
                 return (
                   <>
-                    <Modal>
+                    <Modal
+                      currListing={item}
+                      onMouseOver={() => handleMouseOver(item.id)}
+                      onMouseOut={() => handleMouseOver(false)}
+                    >
                       <div className="overflow-hidden shadow-sm">
-                        {item.carouselPhotos?.length ? (
-                          <Carousel images={item.carouselPhotos.slice(0, 5)} />
+                        {item.url?.length ? (
+                          <Carousel images={item.url.slice(0, 5)} />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center">
-                            <img
-                              src={NoImage}
-                              alt="no image"
-                              className="max-h-96 w-[70%] max-w-md rounded-lg object-contain opacity-70"
-                            />
+                            <div
+                              className={
+                                'grid h-full w-full place-items-center bg-zinc-200 text-2xl text-zinc-500 transition-all hover:brightness-95'
+                              }
+                            >
+                              No Image
+                            </div>
                           </div>
                         )}
                       </div>

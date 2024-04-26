@@ -4,13 +4,13 @@ import _ from 'lodash';
 import qs from 'qs'; // Import qs library for query string manipulation
 
 import Map from '@/components/custom/map/map';
-import Modal from '@/components/custom/modal.jsx/modal';
 import { Input } from '@/components/ui/input';
 import { FullLayoutFixed } from '@/layout';
 import Carousel from '@/components/custom/carousel/carousel';
 import DisplayMap from './component/displayMap';
 import { getListingData } from '@/api/listingApi';
 import { isMapBoundsValid } from './utils';
+import Modal from './component/Modal';
 
 // Check if value is [object Object],
 // why? because if query empty (e.g. queryBound, instead of returning value, it return '[object Object])
@@ -173,11 +173,8 @@ const Listing = () => {
     <FullLayoutFixed>
       <div className="flex h-full flex-col-reverse pt-24">
         <section className="h-full min-h-full">
-          {/* <div className="grid-rows-[calc(100% - 4rem)] grid h-full grid-cols-2"> */}
           <div className="grid h-full md:grid-cols-[1fr_375px] 2xl:grid-cols-[1fr_750px]">
             <section className="z-10 hidden md:block">
-              {/* <div className="relative z-10"> */}
-              {/* <Map center={[-6.903732, 107.618933]} zoom={17} /> */}
               <DisplayMap
                 getMapData={getMapData}
                 center={center}
@@ -185,7 +182,6 @@ const Listing = () => {
                 listing={listing}
                 currHover={currHover}
               />
-              {/* </div> */}
             </section>
             <section className="overflow-y-scroll pt-6 shadow-2xl">
               <div className="grid grid-cols-2 gap-3 px-4">
@@ -197,12 +193,11 @@ const Listing = () => {
                             // basically if handleMouseOver false, then nothing hovered
                             onMouseOver={() => handleMouseOver(item.id)}
                             onMouseOut={() => handleMouseOver(false)}
+                            currListing={item}
                           >
                             <div className="overflow-hidden shadow-sm">
-                              {item?.image_urls?.length ? (
-                                <Carousel
-                                  images={item.image_urls.slice(0, 5)}
-                                />
+                              {item?.url?.length ? (
+                                <Carousel images={item.url.slice(0, 5)} />
                               ) : (
                                 <div className="flex h-full w-full items-center justify-center">
                                   <div
@@ -231,38 +226,6 @@ const Listing = () => {
                       );
                     })
                   : 'No Data'}
-                {/* {data.response.map((item) => {
-                  return (
-                    <>
-                      <Modal>
-                        <div className="overflow-hidden">
-                          {item.carouselPhotos.length ? (
-                            <Carousel
-                              images={item.carouselPhotos.slice(0, 5)}
-                            />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center">
-                              <img
-                                src="https://img.freepik.com/premium-vector/default-image-icon-vector-missing-picture-page-website-design-mobile-app-no-photo-available_87543-11093.jpg"
-                                alt="no image"
-                                className="max-h-96 w-full max-w-md rounded-lg object-contain shadow-lg"
-                              />
-                            </div>
-                          )}
-                        </div>
-                        <div className="p-2">
-                          <p className="text-lg font-semibold">
-                            {item.titleText}
-                          </p>
-                          <p className="text-sm">{item.address}</p>
-                          <p className="text-xs text-slate-400">
-                            {item.brokerName}
-                          </p>
-                        </div>
-                      </Modal>
-                    </>
-                  );
-                })} */}
               </div>
             </section>
           </div>
