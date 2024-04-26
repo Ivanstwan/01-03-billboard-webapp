@@ -193,16 +193,13 @@ const addListingImage = async (req, res) => {
 // e.g. lat -6.7 to -6.8, and long 115.1 to 115.2 (like a square area)
 const getListingWithinArea = async (req, res) => {
   try {
-    let query = 'SELECT * FROM `advertisement`';
+    let query = `SELECT a.*, image.url 
+    FROM
+      (SELECT * FROM advertisement`;
     const values = [];
 
     // to not add ' AND' for first init
     let firstInit = true;
-
-    // add WHERE if query not empty
-    if (req.query?.mapBounds || req.query?.userId) {
-      query += ' WHERE';
-    }
 
     // Check if mapBounds is provided in the query
     if (req.query?.mapBounds) {
@@ -214,7 +211,7 @@ const getListingWithinArea = async (req, res) => {
       const floatEast = parseFloat(east);
       const floatWest = parseFloat(west);
 
-      query += ' `latitude` BETWEEN ? AND ? AND `longitude` BETWEEN ? AND ?';
+      query += ' WHERE latitude BETWEEN ? AND ? AND longitude BETWEEN ? AND ?';
       values.push(floatSouth, floatNorth, floatWest, floatEast);
       firstInit = false;
     }
@@ -222,14 +219,16 @@ const getListingWithinArea = async (req, res) => {
     // Check if userId is provided in the query
     if (req.query?.userId) {
       if (firstInit) {
-        query += ' `user_id` = ?';
+        query += ' WHERE user_id = ?';
         firstInit = false;
       } else {
-        query += ' AND `user_id` = ?';
+        query += ' AND user_id = ?';
       }
 
       values.push(req.query.userId);
     }
+
+    query += ' LIMIT 50) AS a LEFT JOIN image ON a.id = image.ads_id';
 
     // Add limit & semicolon to the end of the query
     query += ' LIMIT ?;';
@@ -237,7 +236,22 @@ const getListingWithinArea = async (req, res) => {
 
     const [rows, fields] = await pool.query(query, values);
 
-    res.status(200).json(rows);
+    // Transforming the result using reduce to group image urls by ad id
+    const result = [];
+    rows.forEach((row) => {
+      const { id, url } = row;
+      const existingAd = result.find((ad) => ad.id === id);
+      if (existingAd) {
+        if (url) existingAd.image_urls.push(url);
+      } else {
+        result.push({
+          ...row,
+          image_urls: url ? [url] : [],
+        });
+      }
+    });
+
+    res.status(200).json(result);
   } catch (err) {
     console.log('Error querying data:', err);
     res.status(500).send('Internal Server Error');
