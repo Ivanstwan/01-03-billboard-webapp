@@ -239,14 +239,14 @@ const getListingWithinArea = async (req, res) => {
     // Transforming the result using reduce to group image urls by ad id
     const result = [];
     rows.forEach((row) => {
-      const { id, url } = row;
+      const { id, url: imageUrls } = row;
       const existingAd = result.find((ad) => ad.id === id);
       if (existingAd) {
-        if (url) existingAd.image_urls.push(url);
+        if (imageUrls) existingAd.url.push(imageUrls);
       } else {
         result.push({
           ...row,
-          image_urls: url ? [url] : [],
+          url: imageUrls ? [imageUrls] : [],
         });
       }
     });
