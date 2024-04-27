@@ -14,6 +14,7 @@ const DisplayMap = ({ getMapData, center, zoom, listing, currHover }) => {
       {convertedCenter.length > 0 && (
         <ExternalStateExample
           onMoveHandler={getMapData}
+          onFirstLoadHandler={getMapData}
           center={convertedCenter}
           zoom={zoom}
           listing={listing}

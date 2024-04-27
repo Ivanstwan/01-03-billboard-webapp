@@ -2,6 +2,18 @@ import { advertisementType } from '@/constant/ads';
 import { cn } from '@/lib/utils';
 import React from 'react';
 
+const SmallCardDetail = ({ className, title, text }) => {
+  return (
+    <div className="flex items-center gap-1 rounded-sm border-2 border-slate-600 px-4 py-3">
+      <i className={cn('pr-2 text-3xl', className)} />
+      <div>
+        {title && <p className="flex items-center leading-4">{title}</p>}
+        <p className="flex items-center font-bold">{text || '-'}</p>
+      </div>
+    </div>
+  );
+};
+
 const PreviewListing = ({ listing }) => {
   const { ads_name, location, size_height, size_length, ads_type_id, url } =
     listing || {};
@@ -102,48 +114,37 @@ const PreviewListing = ({ listing }) => {
           {ads_name && (
             <p className="break-words text-3xl font-bold">{ads_name}</p>
           )}
-          {location && <p className="break-words text-xl">{location}</p>}
+          {location && <p className="break-words pt-4 text-xl">{location}</p>}
           <div className="grid grid-cols-3 grid-rows-2 gap-2 pt-4">
             {ads_type_id && (
-              <div className="flex gap-1 bg-zinc-100 px-3 py-2">
-                <p className="flex items-center">
-                  <i className="icon-billboard pr-2 text-2xl" />
-                  {
-                    // finding label ads based on ads_id
-                    advertisementType.find((item) => item.value === ads_type_id)
-                      ?.label
-                  }
-                </p>
-              </div>
+              <SmallCardDetail
+                className="icon-billboard"
+                title="Billboard Type"
+                text={
+                  advertisementType.find((item) => item.value === ads_type_id)
+                    ?.label
+                }
+              />
+            )}
+            {size_height && size_length && size_length > size_length ? (
+              <SmallCardDetail
+                className="icon-rectangle-wide"
+                title="Orientation"
+                text="Horizontal"
+              />
+            ) : (
+              <SmallCardDetail
+                className="icon-rectangle-vertical"
+                title="Orientation"
+                text="Vertical"
+              />
             )}
             {size_height && size_length && (
-              <div className="flex gap-1 bg-zinc-100 px-3 py-2">
-                {size_length > size_length ? (
-                  <p className="flex items-center">
-                    <i className="icon-rectangle-wide pr-2 text-2xl" />
-                    Horizontal
-                  </p>
-                ) : (
-                  <p className="flex items-center">
-                    <i className="icon-rectangle-vertical pr-2 text-2xl" />
-                    Vertical
-                  </p>
-                )}
-              </div>
-            )}
-            {size_height && size_length && (
-              <div className="flex gap-1 bg-zinc-100 px-3 py-2">
-                <div className="flex justify-between gap-4">
-                  <span className="flex items-center font-semibold italic">
-                    <i className="icon-arrow-left-right pr-2 text-lg" />
-                    {size_length}cm
-                  </span>
-                  <span className="flex items-center font-semibold italic">
-                    <i className="icon-arrow-up-down pr-2 text-lg" />
-                    {size_height}cm
-                  </span>
-                </div>
-              </div>
+              <SmallCardDetail
+                className="icon-arrow-left-right"
+                title="Size"
+                text={`${size_length} cm x ${size_height} cm`}
+              />
             )}
           </div>
         </div>

@@ -70,10 +70,10 @@ const MapView = ({ listing }) => {
                         )}
                       </div>
                       <div className="overflow-hidden p-2">
-                        <p className="overflow-hidden text-ellipsis text-lg font-semibold">
+                        <p className="line-clamp-2 overflow-hidden text-ellipsis break-words text-lg font-semibold">
                           {item.ads_name}
                         </p>
-                        <p className="overflow-hidden text-ellipsis text-sm">
+                        <p className="line-clamp-1 overflow-hidden  text-ellipsis break-words text-sm">
                           {item.location}
                         </p>
                         <p className="overflow-hidden text-ellipsis text-xs text-slate-400">

@@ -53,10 +53,21 @@ export default function ExternalStateExample({
   center = [-6.903732, 107.618933],
   zoom = 17,
   onMoveHandler, // Function to handle 'something' (e.g. maybe fetch api) on map move
+  onFirstLoadHandler, // Function to handle 'something' (e.g. maybe fetch api) on map move
   listing = [],
   currHover = false,
 }) {
   const [map, setMap] = useState(null);
+  // init load, for first time map loaded (can be used for getting mapBounds and fetching data)
+  const [initialLoad, setInitialLoad] = useState(false);
+
+  useEffect(() => {
+    // Fetch initial map data when the component mounts
+    if (map && !initialLoad) {
+      if (onFirstLoadHandler) onFirstLoadHandler(map);
+      setInitialLoad(true); // Update initialLoad state to true after the initial fetch
+    }
+  }, [map, initialLoad]);
 
   useEffect(() => {
     // Handling map empty, when init render

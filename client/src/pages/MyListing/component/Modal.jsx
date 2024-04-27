@@ -20,7 +20,7 @@ const Modal = ({ children, currListing, onMouseOver, onMouseOut }) => {
       {open && (
         <div className="absolute left-0 top-0 z-50 flex h-screen w-screen cursor-default items-center justify-center">
           <div className="absolute left-0 top-0 z-10 h-full w-full bg-black opacity-20"></div>
-          <div className="relative z-20 h-full w-full max-w-6xl bg-white pt-16">
+          <div className="relative z-20 h-full w-full max-w-6xl overflow-y-scroll bg-white pt-16">
             <PreviewListing listing={currListing} />
           </div>
         </div>
