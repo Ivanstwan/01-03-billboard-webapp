@@ -2,7 +2,14 @@ import React, { useEffect, useState } from 'react';
 
 import ExternalStateExample from '@/components/custom/mapTest/mapTest';
 
-const DisplayMap = ({ getMapData, center, zoom, listing, currHover }) => {
+const DisplayMap = ({
+  getMapData,
+  center,
+  zoom,
+  listing,
+  currHover,
+  eventClickMarker,
+}) => {
   const [convertedCenter, setConvertedCenter] = useState([]);
 
   useEffect(() => {
@@ -19,6 +26,7 @@ const DisplayMap = ({ getMapData, center, zoom, listing, currHover }) => {
           zoom={zoom}
           listing={listing}
           currHover={currHover}
+          eventClickMarker={eventClickMarker}
         />
       )}
     </>

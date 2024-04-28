@@ -3,6 +3,8 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import _ from 'lodash';
 import circleIcon from '@/assets/circle-dark-red.png';
 import './index.css';
+import Modal from '@/pages/Listing/component/Modal';
+import Carousel from '../carousel/carousel';
 
 // custom icon for marker
 const iconCircle = new L.icon({ iconUrl: circleIcon, iconSize: [16, 16] });
@@ -56,6 +58,7 @@ export default function ExternalStateExample({
   onFirstLoadHandler, // Function to handle 'something' (e.g. maybe fetch api) on map move
   listing = [],
   currHover = false,
+  eventClickMarker, // Function to handle 'Marker Clicked'
 }) {
   const [map, setMap] = useState(null);
   // init load, for first time map loaded (can be used for getting mapBounds and fetching data)
@@ -108,29 +111,46 @@ export default function ExternalStateExample({
                 icon={item.id === currHover ? iconCircleHovered : iconCircle}
               >
                 <Popup keepInView={true} autoPan={false}>
-                  <div className="grid min-w-[300px] max-w-[450px] grid-rows-[177px,1fr,auto] shadow-lg">
-                    <div className="h-full">
-                      <img
-                        src="https://photos.zillowstatic.com/fp/ee03a8da9b3fdf3c0090469d9d6e154f-cc_ft_384.webp"
-                        alt=""
-                        className="h-0 min-h-full w-full rounded-t-md object-cover"
-                      />
-                    </div>
-                    <div className="overflow-hidden rounded-b-md bg-white p-2 font-sans">
-                      <div className="max-h-16 overflow-hidden">
-                        <h3 className="break-normal text-2xl font-bold text-neutral-700">
+                  <div
+                    className="grid min-w-[300px] max-w-[450px] cursor-pointer bg-white shadow-lg"
+                    onClick={
+                      eventClickMarker
+                        ? () => {
+                            eventClickMarker(item);
+                          }
+                        : undefined
+                    }
+                  >
+                    <>
+                      <div className="overflow-hidden shadow-sm">
+                        {item?.url?.length ? (
+                          <div className="h-[200px] max-h-[200px]">
+                            <Carousel images={item.url.slice(0, 5)} />
+                          </div>
+                        ) : (
+                          <div className="flex h-[200px] max-h-[200px] w-full items-center justify-center">
+                            <div
+                              className={
+                                'grid h-full w-full place-items-center bg-zinc-200 text-2xl text-zinc-500 transition-all hover:brightness-95'
+                              }
+                            >
+                              No Image
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <div className="overflow-hidden p-2">
+                        <div className="line-clamp-2 overflow-hidden text-ellipsis break-words text-lg font-semibold">
                           {item.ads_name}
-                        </h3>
+                        </div>
+                        <div className="line-clamp-1 overflow-hidden  text-ellipsis break-words text-sm">
+                          {item.location}
+                        </div>
+                        <div className="overflow-hidden text-ellipsis text-xs text-slate-400">
+                          {item.user_id}
+                        </div>
                       </div>
-                      <div className="text-neutral-600">
-                        height {item.height ?? '--'} | length{' '}
-                        {item.length ?? '--'}
-                      </div>
-                      <div className="pt-2 uppercase tracking-wider text-neutral-600">
-                        {item.location}
-                      </div>
-                      <div className="uppercase text-neutral-600">user</div>
-                    </div>
+                    </>
                   </div>
                 </Popup>
               </Marker>

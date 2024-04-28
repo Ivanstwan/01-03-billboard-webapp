@@ -11,6 +11,8 @@ import DisplayMap from './component/displayMap';
 import { getListingData } from '@/api/listingApi';
 import { isMapBoundsValid } from './utils';
 import Modal from './component/Modal';
+import PreviewListing from '@/components/custom/listing/previewListing';
+import { cn } from '@/lib/utils';
 
 // Check if value is [object Object],
 // why? because if query empty (e.g. queryBound, instead of returning value, it return '[object Object])
@@ -40,6 +42,10 @@ const Listing = () => {
 
   // Handle mouse over card listing
   const [currHover, setCurrHover] = useState();
+
+  // Handle mouse click on Map Marker
+  const [listingSelected, setListingSelected] = useState({});
+  const [modalOn, setModalOn] = useState(false);
 
   const handleMouseOver = useRef(
     _.debounce((id) => {
@@ -169,8 +175,29 @@ const Listing = () => {
     );
   };
 
+  // need to add another event + Modal, because cannot use Modal in Map Marker, because position style issue
+  const clickMapMarker = (listingItem) => {
+    setModalOn(true);
+    setListingSelected(listingItem);
+  };
+
   return (
     <FullLayoutFixed>
+      {/* Modal */}
+      <div
+        className={cn(
+          'absolute left-0 top-0 z-50 flex h-screen w-screen cursor-default items-center justify-center',
+          { hidden: !modalOn }
+        )}
+      >
+        <div
+          className="absolute left-0 top-0 z-10 h-full w-full bg-black opacity-20"
+          onClick={() => setModalOn(false)}
+        ></div>
+        <div className="relative z-20 h-full w-full max-w-6xl overflow-y-scroll bg-white pt-16">
+          <PreviewListing listing={listingSelected} />
+        </div>
+      </div>
       <div className="flex h-full flex-col-reverse pt-24">
         <section className="h-full min-h-full">
           <div className="grid h-full md:grid-cols-[1fr_375px] 2xl:grid-cols-[1fr_750px]">
@@ -181,6 +208,7 @@ const Listing = () => {
                 zoom={zoom}
                 listing={listing}
                 currHover={currHover}
+                eventClickMarker={clickMapMarker}
               />
             </section>
             <section className="overflow-y-scroll pt-6 shadow-2xl">
