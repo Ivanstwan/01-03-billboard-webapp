@@ -7,11 +7,15 @@ import Modal from '@/pages/Listing/component/Modal';
 import Carousel from '../carousel/carousel';
 
 // custom icon for marker
-const iconCircle = new L.icon({ iconUrl: circleIcon, iconSize: [16, 16] });
+const iconCircle = new L.icon({
+  iconUrl: circleIcon,
+  iconSize: [16, 16],
+  className: 'marker--all-listing',
+});
 const iconCircleHovered = new L.icon({
   iconUrl: circleIcon,
   iconSize: [16, 16],
-  className: 'leaflet-marker--hovered',
+  className: 'marker--all-listing leaflet-marker--hovered',
 });
 
 const center = [51.505, -0.09];

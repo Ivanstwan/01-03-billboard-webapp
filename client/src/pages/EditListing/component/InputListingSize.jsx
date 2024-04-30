@@ -67,13 +67,13 @@ const InputListingSize = ({
           currListing.size_length !== 0 &&
           currListing.size_height &&
           currListing.size_length && (
-            <div className="min-w-96 relative h-96 w-96 border-2 border-green-100">
+            <div className="min-w-96 relative h-96 w-96 border-2 border-zinc-100">
               <div
                 style={{
                   width: handleSizeDisplay('x'),
                   height: handleSizeDisplay('y'),
                 }}
-                className={`after absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] border-2 border-dashed border-green-700 transition-all before:absolute before:right-0 before:top-[50%] before:translate-y-[-50%] before:content-[attr(dynamic-before)] after:absolute after:bottom-0 after:right-[50%] after:translate-x-[50%] after:content-[attr(dynamic-after)]`}
+                className={`after absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] rounded-md border-2 border-dashed border-zinc-700 transition-all before:absolute before:right-0 before:top-[50%] before:translate-y-[-50%] before:content-[attr(dynamic-before)] after:absolute after:bottom-0 after:right-[50%] after:translate-x-[50%] after:content-[attr(dynamic-after)]`}
                 dynamic-after={`${currListing.size_length} cm`}
                 dynamic-before={`${currListing.size_height} cm`}
               ></div>
