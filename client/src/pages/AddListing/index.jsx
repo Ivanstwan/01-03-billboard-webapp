@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import { MainLayout } from '@/layout';
-import Map from '@/components/custom/map/map';
-import FormInput from '@/components/custom/input/formInput';
-import SizeDisplay from './SizeDisplay';
-import AdsType from './AdsType';
-import { Button } from '@/components/ui';
-import { validateAndTransformState } from '@/lib/formUtils';
+import useAuth from '@/hooks/useAuth';
+import { addListing, getSingleListing } from '@/api/listingApi';
+import { useErrorContext } from '@/context/ErrorProvider';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import InputAdsType from './component/InputAdsType';
+import InputCoordinate from './component/InputCoordinate';
+import InputListingSize from './component/InputListingSize';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,138 +21,157 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { addListing } from '@/api/listingApi';
-import { useErrorContext } from '@/context/ErrorProvider';
+import {
+  latitudeRegex as _latitudeRegex,
+  longitudeRegex as _longitudeRegex,
+  sizeHeightRegex as _sizeHeightRegex,
+  sizeLengthRegex as _sizeLengthRegex,
+} from '@/constant/regex';
+import { editListing } from '@/api/listingApi';
+import StringDiffViewer from './component/StringDiffViewer';
 
-const inputValidation = {
-  title: {
-    required: true,
+const getTitleFromValue = (value) => {
+  const inputItem = inputConfig.find((item) => item.value === value);
+  return inputItem ? inputItem.title : null;
+};
+
+const inputConfig = [
+  {
+    value: 'ads_name',
+    title: 'Advertisement Title',
+    className: 'font-medium',
+    placeholder: 'e.g. Perempatan Dago / Bridge Pondok Indah Mall',
   },
-  address: {
-    required: true,
+  {
+    value: 'location',
+    title: 'Location',
+    className: 'font-medium',
+    placeholder:
+      'e.g. Jl. Farmasi No.6, Bendungan Hilir, Tanah Abang, Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10210',
   },
-  adsType: {
-    required: true,
+  { value: 'ads_type_id', title: 'Ads Type' },
+  { value: 'latitude', title: 'Latitude' },
+  { value: 'longitude', title: 'Longitude' },
+  {
+    value: 'size_length',
+    title: 'Length (cm)',
+    placeholder: 'e.g. 100 for "100cm or 1meter"',
   },
+  {
+    value: 'size_height',
+    title: 'Height (cm)',
+    placeholder: 'e.g. 100 for "100cm or 1meter"',
+  },
+];
+
+const inputValidationRules = {
+  ads_name: { required: true, errorMessage: 'Input Required.' },
+  location: { required: true, errorMessage: 'Input Required.' },
+  ads_type_id: { required: true, errorMessage: 'Input Required.' },
   latitude: {
-    pattern: /^-?([1-8]?[1-9]|[1-9]0)\.{1}\d{1,6}$/,
+    pattern: _latitudeRegex,
+    errorMessage: 'False input format. (Also Max decimal 6)',
   },
   longitude: {
-    pattern: /^-?((1[0-7]|[1-9]?)[0-9]|180)\.{1}\d{1,6}$/,
+    pattern: _longitudeRegex,
+    errorMessage: 'False input format. (Also Max decimal 6)',
+  },
+  size_length: {
+    pattern: _sizeHeightRegex,
+    errorMessage: 'False input format. (Max length 7)',
+  },
+  size_height: {
+    pattern: _sizeLengthRegex,
+    errorMessage: 'False input format. (Max length 7)',
   },
 };
 
+const NormalInput = ({
+  config,
+  handleInput,
+  currListing,
+  errorMessage = false,
+}) => {
+  return (
+    <div className="flex items-center gap-8">
+      <p
+        className={`flex-shrink-0 flex-grow-0 basis-[250px] text-lg ${
+          config.className || ''
+        }`}
+      >
+        {config.title}
+      </p>
+      <div className="relative flex-1">
+        <Input
+          type="text"
+          placeholder={config.placeholder || ''}
+          value={currListing[config.value] || ''}
+          className={`flex-grow-0 ${errorMessage && 'border-red-500'}`}
+          onChange={(e) => handleInput(e.target.value, config)}
+        />
+        {errorMessage && (
+          <p className="absolute pl-1 pt-1 text-sm italic text-red-500">
+            <span className="not-italic">⛔ </span>
+            {errorMessage || 'Input Required / Invalid.'}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const AddListing = () => {
-  const navigate = useNavigate();
+  const { auth, initAuth } = useAuth();
   const { errors, addError, removeError } = useErrorContext();
-  const [locationData, setLocationData] = useState({
-    title: '',
-    address: '',
-    adsType: '',
-    x: undefined,
-    y: undefined,
-    latitude: '',
-    longitude: '',
-  });
+  const [inputError, setInputError] = useState({});
+  const navigate = useNavigate();
 
-  const [error, setError] = useState({});
-
+  // New listing data
+  const [currListing, setCurrListing] = useState({});
+  // Loading when submit
   const [loading, setLoading] = useState(false);
 
-  const inputs = [
-    {
-      id: 1,
-      name: 'title',
-      type: 'text',
-      placeholder: 'E.g. Perempatan Dago / Bridge Pondok Indah Mall',
-      label: 'Title',
-      pattern: '^[A-Za-z0-9]{3,16}$',
-      errorMessage: error?.title,
-    },
-    {
-      id: 2,
-      name: 'address',
-      type: 'text',
-      placeholder:
-        'E.g. Jl. Farmasi No.6, RT.6/RW.3, Bendungan Hilir, Tanah Abang, Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10210',
-      label: 'Address / Location Estimation',
-      pattern: '^[A-Za-z0-9]{3,16}$',
-      errorMessage: error?.address,
-    },
-  ];
-
-  const inputsSize = [
-    {
-      id: 1,
-      name: 'x',
-      type: 'number',
-      placeholder: 'cm',
-      label: 'Horizontal',
-    },
-    {
-      id: 2,
-      name: 'y',
-      type: 'number',
-      placeholder: 'cm',
-      label: 'Vertical',
-    },
-  ];
-
-  const inputsCoordinate = [
-    {
-      id: 1,
-      name: 'latitude',
-      type: 'text',
-      placeholder: '-8.723816909835',
-      label: 'Latitude',
-      errorMessage: error?.latitude,
-    },
-    {
-      id: 2,
-      name: 'longitude',
-      type: 'text',
-      placeholder: '115.17508747874',
-      label: 'Longitude',
-      errorMessage: error?.longitude,
-    },
-  ];
-
-  const handleInputChange = (e) => {
-    setLocationData({
-      ...locationData,
-      [e.target.name]: e.target.value,
-    });
-
-    setError({
-      ...error,
-      [e.target.name]: '',
-    });
-  };
-
-  // Validation function for coordinates
-  const isValidCoordinates = (lat, lon) => {
-    const latRegex = inputValidation.latitude.pattern;
-    const lonRegex = inputValidation.longitude.pattern;
-
-    return latRegex.test(lat) && lonRegex.test(lon);
-  };
-
-  const latLongPosition = () => {
-    return locationData.latitude && locationData.longitude
-      ? [parseFloat(locationData.latitude), parseFloat(locationData.longitude)]
-      : undefined;
-  };
-
   const handleBeforeSubmit = (e) => {
-    const responseValidation = validateAndTransformState(
-      locationData,
-      inputValidation
-    );
+    let isInputValid = true;
+    // Holding error of current input
+    let error = {};
 
-    if (!responseValidation.isInputValid) {
-      // prevent modal
+    // iterating the key property in currListing
+    for (const field in inputValidationRules) {
+      if (inputValidationRules.hasOwnProperty(field)) {
+        const inputValue = currListing[field];
+        const rules = inputValidationRules[field];
+
+        // Check for required field
+        if (
+          rules?.required &&
+          (inputValue === undefined || inputValue === '' || inputValue === null)
+        ) {
+          error = {
+            ...error,
+            [field]: rules?.errorMessage || 'Input Required / False Format.',
+          };
+          isInputValid = false; // Validation failed
+        }
+
+        // Check against regex pattern
+        if (inputValue) {
+          if (rules?.pattern && !rules.pattern.test(inputValue)) {
+            error = {
+              ...error,
+              [field]: rules?.errorMessage || 'Input Required / Invalid.',
+            };
+            isInputValid = false; // Validation failed
+          }
+        }
+      }
+    }
+
+    setInputError(error);
+
+    if (!isInputValid) {
+      // This, prevent 'modal' component to appear
       e.preventDefault();
-      setError({ ...responseValidation.error });
       addError({
         title: 'Uhm! Something went wrong.',
         text: 'There were empty or invalid input.',
@@ -159,137 +180,142 @@ const AddListing = () => {
     }
   };
 
+  const handleInput = (value, config) => {
+    setCurrListing({
+      ...currListing,
+      [config.value]: value,
+    });
+
+    setInputError({
+      ...inputError,
+      [config.value]: '',
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!loading) {
       setLoading(!loading);
 
       // Post Data to api
-      const postData = async () => {
+      const submitEdit = async () => {
         try {
-          const result = await addListing(locationData);
-
-          if (result?.success) {
+          const result = await addListing(currListing, auth.access_token);
+          console.log(result, '[result]');
+          if (result?.status === 200) {
+            const { listing_id } = result.data;
             addError({
               title: 'Success!',
-              text: 'Adding listing successful.',
+              text: 'Listing Added.',
               variant: 'green',
             });
-            return navigate('/listing');
+            return listing_id
+              ? navigate('/listing/edit-image/' + listing_id)
+              : navigate('/my-listing');
           }
           // setListing(result);
         } catch (error) {
           // setError(error);
+          addError({
+            title: 'Error!',
+            text: 'Add Listing Failed.',
+            variant: 'red',
+          });
         } finally {
           // setIsLoading(false);
         }
       };
-      postData();
+      submitEdit();
     }
   };
 
   return (
     <MainLayout>
-      <div className="p-10">
-        <h1 className="pb-4 text-4xl font-bold">Listing Form</h1>
-        {inputs.map((input) => {
-          return (
-            <div className="py-4" key={input.id}>
-              <FormInput
-                {...input}
-                value={locationData[input.name]}
-                onChange={handleInputChange}
-              />
-            </div>
-          );
-        })}
-        <div className="py-4">
-          <p className="pb-2 font-semibold">Size (centimeter)</p>
-          <div className="flex flex-wrap gap-10">
-            <div className="flex flex-col gap-4">
-              {inputsSize.map((input) => {
-                return (
-                  <div className="py-4" key={input.id}>
-                    <FormInput
-                      {...input}
-                      value={locationData[input.name]}
-                      onChange={handleInputChange}
-                      className="grid grid-cols-[150px_200px]"
-                    />
+      <div className="flex flex-col gap-8 p-8">
+        <h1 className="text-4xl font-bold">Add New Listing (1/2)</h1>
+        {/* Ads Name */}
+        <NormalInput
+          config={inputConfig[0]}
+          handleInput={handleInput}
+          currListing={currListing}
+          errorMessage={inputError[inputConfig[0].value]}
+        />
+
+        {/* Location */}
+        <NormalInput
+          config={inputConfig[1]}
+          handleInput={handleInput}
+          currListing={currListing}
+          errorMessage={inputError[inputConfig[1].value]}
+        />
+
+        <Separator />
+
+        {/* Ads Type */}
+        <InputAdsType
+          config={inputConfig[2]}
+          handleInput={handleInput}
+          currListing={currListing}
+          errorMessage={inputError[inputConfig[2].value]}
+        />
+
+        <Separator />
+
+        {/* Coordinate */}
+        <InputCoordinate
+          config={[inputConfig[3], inputConfig[4]]}
+          handleInput={handleInput}
+          currListing={currListing}
+          errorMessage={[
+            inputError[inputConfig[3].value],
+            inputError[inputConfig[4].value],
+          ]}
+        />
+
+        <Separator />
+
+        {/* Ads Size */}
+        <InputListingSize
+          config={[inputConfig[5], inputConfig[6]]}
+          handleInput={handleInput}
+          currListing={currListing}
+          errorMessage={[
+            inputError[inputConfig[5].value],
+            inputError[inputConfig[6].value],
+          ]}
+        />
+
+        {/* Submit Button & Preview */}
+        <AlertDialog>
+          <AlertDialogTrigger
+            className="ml-auto inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-primary p-9 text-xl font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+            onClick={handleBeforeSubmit}
+          >
+            Add Listing
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Please Recheck Your Input</AlertDialogTitle>
+              {Object.keys(currListing).map((item, idx) => {
+                return currListing[item] ? (
+                  <div className="grid grid-cols-[1fr_2fr]">
+                    <p>{getTitleFromValue(item)}</p>
+                    <p>{currListing[item]}</p>
                   </div>
+                ) : (
+                  <></>
                 );
               })}
-            </div>
-            <SizeDisplay x={locationData.x} y={locationData.y} />
-          </div>
-        </div>
-        <div className="py-4">
-          <p className="pb-2 font-semibold">Advertisement Type</p>
-          <AdsType
-            onChange={handleInputChange}
-            name="adsType"
-            errorMessage={error?.adsType}
-          />
-        </div>
-        <div className="py-4">
-          <div className="flex flex-wrap gap-10">
-            <div className="flex flex-col gap-4">
-              {inputsCoordinate.map((input) => {
-                return (
-                  <div key={input.id} className="w-96">
-                    <FormInput
-                      {...input}
-                      value={locationData[input.name]}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                );
-              })}
-              <span className="font-semibold italic text-slate-500">
-                *maximum 6 digit behind comma{' '}
-                <span className="not-italic">😉</span>
-              </span>
-            </div>
-            <div className="min-w-96 relative z-10 h-96 w-96 border-2 border-green-100">
-              {isValidCoordinates(
-                locationData.latitude,
-                locationData.longitude
-              ) && <Map center={latLongPosition()} zoom={17} />}
-            </div>
-          </div>
-        </div>
-        <div className="pt-10">
-          <AlertDialog>
-            <AlertDialogTrigger
-              className="ml-auto inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md bg-primary p-9 text-xl font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-              onClick={handleBeforeSubmit}
-            >
-              Submit Listing 😉
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Please Recheck Your Input</AlertDialogTitle>
-                {Object.keys(locationData).map((item) => {
-                  return (
-                    <AlertDialogDescription key={item}>
-                      {item} ={' '}
-                      {locationData[item] === undefined ||
-                      locationData[item] === ''
-                        ? '[empty]'
-                        : locationData[item]}
-                    </AlertDialogDescription>
-                  );
-                })}
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                {!loading && <AlertDialogCancel>Cancel</AlertDialogCancel>}
-                <AlertDialogAction onClick={handleSubmit}>
-                  {loading ? 'Loading...' : 'Continue'}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
+            </AlertDialogHeader>
+            {/* basically to show button if, some value different */}
+            <AlertDialogFooter>
+              {!loading && <AlertDialogCancel>Cancel</AlertDialogCancel>}
+              <AlertDialogAction onClick={handleSubmit}>
+                {loading ? 'Loading...' : 'Continue'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </MainLayout>
   );

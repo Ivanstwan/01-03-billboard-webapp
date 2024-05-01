@@ -3,13 +3,12 @@ import { lazy } from 'react';
 import Home from '@/pages/Home';
 import LandingPage from '@/pages/LandingPage';
 import Login from '@/pages/Login';
-import AddListing from '@/pages/AddListing';
 import Listing from '@/pages/Listing';
 import EditListing from '@/pages/EditListing';
 import MyListing from '@/pages/MyListing';
 import Register from '@/pages/Register';
 import RegisterPhase2 from '@/pages/RegisterPhase2';
-import AddListingFirst from '@/pages/AddListingFirst';
+import AddListing from '@/pages/AddListing';
 import EditListingImage from '@/pages/EditListingImage';
 
 const NotFound = lazy(() => import('@/pages/NotFound'));
@@ -18,7 +17,7 @@ export const privateRoutes = [
   // Listing
   {
     path: '/listing/add',
-    element: <AddListingFirst />,
+    element: <AddListing />,
   },
   {
     path: '/listing/edit/:id',
