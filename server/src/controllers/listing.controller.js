@@ -49,6 +49,36 @@ const addListing = async (req, res) => {
   }
 };
 
+// delete listing
+const deleteListing = async (req, res) => {
+  const { id } = req.params;
+  const { user_id } = req.decoded;
+
+  const parseId = parseInt(id, 10);
+
+  try {
+    const query = 'DELETE FROM advertisement WHERE id = ? AND user_id = ?;';
+    const valueDelete = [parseId, user_id];
+
+    const [rows, fields] = await pool.query(query, valueDelete);
+
+    if (rows.affectedRows === 1) {
+      // If one row was affected (inserted), consider it a success
+      res
+        .status(200)
+        .json({ success: true, message: 'Success Remove Listing' });
+    } else {
+      // Handle other cases, e.g., no rows affected
+      res
+        .status(400)
+        .json({ success: false, message: 'Failed to Remove Listing' });
+    }
+    return;
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
 // add listing
 const addListingImage = async (req, res) => {
   const { user_id } = req.decoded;
@@ -228,11 +258,11 @@ const getListingWithinArea = async (req, res) => {
       values.push(req.query.userId);
     }
 
-    query += ' LIMIT 50) AS a LEFT JOIN image ON a.id = image.ads_id';
+    query += ' LIMIT 300) AS a LEFT JOIN image ON a.id = image.ads_id';
 
     // Add limit & semicolon to the end of the query
     query += ' LIMIT ?;';
-    values.push(50);
+    values.push(300);
 
     const [rows, fields] = await pool.query(query, values);
 
@@ -393,6 +423,7 @@ const deleteListingImage = async (req, res) => {
 
 export {
   addListing,
+  deleteListing,
   getListingWithinArea,
   getSingleListing,
   insertDataIntoDatabase,

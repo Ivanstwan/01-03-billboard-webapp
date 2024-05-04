@@ -1,5 +1,11 @@
 import express from 'express';
-import { body, check, checkSchema, validationResult } from 'express-validator';
+import {
+  body,
+  check,
+  checkSchema,
+  param,
+  validationResult,
+} from 'express-validator';
 import { listingController } from '../controllers/index.js';
 import { listingValidateSchema } from '../middlewares/listing.middleware.js';
 import { authenticateToken } from '../middlewares/auth.middleware.js';
@@ -106,6 +112,27 @@ router.route('/add').post(
     listingController.addListing(req, res);
   }
 );
+
+router
+  .route('/delete/:id')
+  .delete(
+    [
+      param('id')
+        .notEmpty()
+        .withMessage('ID must be provided')
+        .isNumeric()
+        .withMessage('ID must be a number'),
+    ],
+    (req, res) => {
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      listingController.deleteListing(req, res);
+    }
+  );
 
 // edit listing - have very simillar logic with 'add listing'
 router.route('/edit/data').post(
