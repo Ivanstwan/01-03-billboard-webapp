@@ -4,6 +4,7 @@ import config from '@/config/API';
 export const allListing = config.BASE_URL + '/api/listing';
 export const singleListing = config.BASE_URL + '/api/listing';
 export const addListing = config.BASE_URL + '/api/listing/add';
+export const deleteListing = config.BASE_URL + '/api/listing/delete';
 export const addListingImage = config.BASE_URL + '/api/listing/add/image';
 export const editListing = config.BASE_URL + '/api/listing/edit/data';
 export const deleteListingImage = config.BASE_URL + '/api/listing/delete/image';

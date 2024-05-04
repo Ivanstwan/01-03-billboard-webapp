@@ -8,9 +8,11 @@ import qs from 'qs';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import MapView from './MapView';
+import { useErrorContext } from '@/context/ErrorProvider';
 
 const MyListing = () => {
   const { auth, initAuth } = useAuth();
+  const { errors, addError, removeError } = useErrorContext();
 
   const [mapView, setMapView] = useState(false);
   const [listing, setListing] = useState([]);
@@ -37,6 +39,10 @@ const MyListing = () => {
     // call api
     fetchData();
   }, []);
+
+  const handleChildDelete = () => {
+    fetchData();
+  };
 
   return mapView ? (
     <FullLayoutFixed>
@@ -75,7 +81,12 @@ const MyListing = () => {
             </Label>
           </div>
         </div>
-        <TableView listing={listing} />
+        <TableView
+          listing={listing}
+          auth={auth}
+          addError={addError}
+          onChildDeleteSuccess={handleChildDelete}
+        />
       </div>
     </FullLayoutScrollable>
   );

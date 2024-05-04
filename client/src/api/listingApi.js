@@ -3,6 +3,7 @@ import {
   allListing as _allListing,
   singleListing as _singleListing,
   addListing as _addListing,
+  deleteListing as _deleteListing,
   addListingImage as _addListingImage,
   editListing as _editListing,
   deleteListingImage as _deleteListingImage,
@@ -31,6 +32,18 @@ export const getSingleListing = async (listingId) => {
 export const addListing = async (listingData, accessToken) => {
   try {
     const res = await axios.post(_addListing, listingData, {
+      headers: { authorization: `Bearer ${accessToken}` },
+    });
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const deleteListing = async (listingId, accessToken) => {
+  console.log('delete listing');
+  try {
+    const res = await axios.delete(`${_deleteListing}/${listingId}`, {
       headers: { authorization: `Bearer ${accessToken}` },
     });
     return res;

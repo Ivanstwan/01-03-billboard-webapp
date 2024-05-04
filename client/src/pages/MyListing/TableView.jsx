@@ -17,10 +17,22 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui';
 import usePaginationCell from '@/hooks/pagination/usePaginationCell';
 import useScreenWidth from '@/hooks/pagination/useScreenWidth';
+import { deleteListing } from '@/api/listingApi';
 
 const itemPerPage = 10;
 
@@ -123,7 +135,7 @@ const PaginationDemo = ({ totalPages, itemPerPage, currentPage, goToPage }) => {
   );
 };
 
-const TableView = ({ listing }) => {
+const TableView = ({ listing, auth, addError, onChildDeleteSuccess }) => {
   const screenWidth = useScreenWidth();
   const [page, setPage] = useState(0);
 
@@ -134,6 +146,32 @@ const TableView = ({ listing }) => {
 
   const goToPage = (toPage) => {
     setPage(toPage);
+  };
+
+  const removeListing = async (e, item) => {
+    e.preventDefault();
+
+    try {
+      const response = await deleteListing(item.id, auth.access_token);
+
+      if (response?.data?.success) {
+        addError({
+          title: 'Success.',
+          text: 'Listing is removed.',
+          variant: 'green',
+        });
+        onChildDeleteSuccess();
+        return;
+      }
+
+      addError({
+        title: 'Failed to Remove Listing.',
+        text: 'Either listing already gone or not authorized.',
+        variant: 'red',
+      });
+    } catch (error) {
+      console.log(error, 'error');
+    }
   };
 
   return (
@@ -149,8 +187,7 @@ const TableView = ({ listing }) => {
                     {key.title}
                   </TableHead>
                 ))}
-                <TableHead className="w-20 pl-4">Action</TableHead>
-                <TableHead></TableHead>
+                <TableHead className="w-[16%] pl-4">Action</TableHead>
                 <TableHead></TableHead>
               </>
             )}
@@ -171,8 +208,8 @@ const TableView = ({ listing }) => {
         <TableBody className="w-full">
           {listing.length > 0 && (
             <>
-              {listing.slice(startIndex, endIndex).map((item, idx) => (
-                <TableRow key={idx} className="w-full">
+              {listing.slice(startIndex, endIndex).map((item) => (
+                <TableRow key={item.id} className="w-full">
                   {screenWidth >= 1024 && (
                     <>
                       {tableConfig.map((config) => (
@@ -186,20 +223,52 @@ const TableView = ({ listing }) => {
                           </div>
                         </TableCell>
                       ))}
-                      <TableCell className="w-[8%]">
-                        <Link to={`/listing/edit/${item.id}`}>
-                          <Button variant="outline">Edit</Button>
-                        </Link>
+                      <TableCell className="w-[16%]">
+                        <div className="flex w-full flex-col gap-2">
+                          <Link to={`/listing/edit/${item.id}`}>
+                            <Button variant="outline" className="w-[90%]">
+                              Edit
+                            </Button>
+                          </Link>
+                          <Link to={`/listing/edit-image/${item.id}`}>
+                            <Button variant="outline" className="w-[90%]">
+                              Edit Image
+                            </Button>
+                          </Link>
+                        </div>
                       </TableCell>
                       <TableCell className="w-[8%]">
-                        <Link to={`/listing/edit-image/${item.id}`}>
-                          <Button variant="outline">Edit Image</Button>
-                        </Link>
-                      </TableCell>
-                      <TableCell className="w-[8%]">
-                        <Link to={`/listing/edit/${item.id}`}>
-                          <Button variant="destructive">Remove</Button>
-                        </Link>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button>Remove</Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent className="max-w-[70%]">
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                <div className="flex justify-between">
+                                  Confirmation: Delete Listing Ad
+                                  <span className="text-s pl-4 font-mono text-slate-300">
+                                    press <span className="italic">cancel</span>{' '}
+                                    or <span className="italic">esc</span> to
+                                    back
+                                  </span>
+                                </div>
+                                <p className="py-4">
+                                  Are you sure you want to delete this listing
+                                  ad? This action cannot be undone.
+                                </p>
+                              </AlertDialogTitle>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={(e) => removeListing(e, item)}
+                              >
+                                Confirm
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </TableCell>
                     </>
                   )}
@@ -221,16 +290,40 @@ const TableView = ({ listing }) => {
                       ))}
                       <TableCell className="flex flex-col gap-2">
                         <div className="flex gap-2">
-                          <Link to={`/listing/edit/${item.id}`}>
-                            <Button variant="outline">Edit</Button>
+                          <Link
+                            to={`/listing/edit/${item.id}`}
+                            className="flex-1"
+                          >
+                            <Button variant="outline" className="w-full">
+                              Edit
+                            </Button>
                           </Link>
-                          <Link to={`/listing/edit-image/${item.id}`}>
+                          <Link
+                            to={`/listing/edit-image/${item.id}`}
+                            className="flex-1"
+                          >
                             <Button variant="outline">Edit Image</Button>
                           </Link>
                         </div>
-                        <Link to={`/listing/edit/${item.id}`}>
-                          <Button variant="destructive">Remove</Button>
-                        </Link>
+                        <AlertDialog className="flex">
+                          <AlertDialogTrigger asChild>
+                            <Button>Remove</Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent className="max-w-[70%]">
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                <div className="flex justify-between">
+                                  Please Recheck Your Input{' '}
+                                  <span className="text-s pl-4 font-mono text-slate-300">
+                                    press <span className="italic">cancel</span>{' '}
+                                    or <span className="italic">esc</span> to
+                                    back
+                                  </span>
+                                </div>
+                              </AlertDialogTitle>
+                            </AlertDialogHeader>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </TableCell>
                     </>
                   )}
