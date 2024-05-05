@@ -93,16 +93,19 @@ const listingPrivateComponents = [
   },
 ];
 
-const authComponents = [
+const authBeforeLoginOption = [
   {
     title: 'Login',
     href: '/login',
     description: 'View listed advertisement in your area.',
   },
+];
+
+const authAfterLoginOption = [
   {
-    title: 'Add Listing',
-    href: '/listing/add',
-    description: 'For listing your advertisement product to the public.',
+    title: 'Profile',
+    href: '/user/profile',
+    description: 'Change your username, add agent contact.',
   },
   {
     title: 'My Listing',
@@ -133,15 +136,27 @@ const UserNavigation = ({ auth }) => {
           </NavigationMenuTrigger>
           <NavigationMenuContent className="">
             <ul className="grid gap-3 p-4 md:w-[300px]">
-              {authComponents.map((component) => (
-                <ListItem
-                  key={component.title}
-                  title={component.title}
-                  href={component.href}
-                >
-                  {component.description}
-                </ListItem>
-              ))}
+              {Object.keys(auth).length === 0
+                ? authBeforeLoginOption.map((component) => (
+                    <ListItem
+                      key={component.title}
+                      title={component.title}
+                      href={component.href}
+                    >
+                      {console.log(auth, '[auth]')}
+                      {component.description}
+                    </ListItem>
+                  ))
+                : authAfterLoginOption.map((component) => (
+                    <ListItem
+                      key={component.title}
+                      title={component.title}
+                      href={component.href}
+                    >
+                      {console.log(auth, '[auth]')}
+                      {component.description}
+                    </ListItem>
+                  ))}
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
@@ -226,22 +241,6 @@ function NavigationMenuDemo() {
             </p>
             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
               {listingPrivateComponents.map((component) => (
-                <ListItem
-                  key={component.title}
-                  title={component.title}
-                  href={component.href}
-                >
-                  {component.description}
-                </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Auth</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-              {authComponents.map((component) => (
                 <ListItem
                   key={component.title}
                   title={component.title}

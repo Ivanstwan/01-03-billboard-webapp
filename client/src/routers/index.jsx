@@ -10,6 +10,7 @@ import Register from '@/pages/Register';
 import RegisterPhase2 from '@/pages/RegisterPhase2';
 import AddListing from '@/pages/AddListing';
 import EditListingImage from '@/pages/EditListingImage';
+import UserProfile from '@/pages/UserProfile';
 
 const NotFound = lazy(() => import('@/pages/NotFound'));
 
@@ -30,6 +31,11 @@ export const privateRoutes = [
   {
     path: '/my-listing',
     element: <MyListing />,
+  },
+  // User Profile
+  {
+    path: '/user/profile',
+    element: <UserProfile />,
   },
   // Home
   {
